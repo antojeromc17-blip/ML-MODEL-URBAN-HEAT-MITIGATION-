@@ -1,0 +1,87 @@
+{
+  "model_type": "XGBRegressor",
+  "best_params": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.03,
+    "max_depth": 5,
+    "min_child_weight": 5,
+    "n_estimators": 200,
+    "subsample": 0.8
+  },
+  "cv_r2": 0.6031,
+  "train": {
+    "r2": 0.6362,
+    "rmse": 2.3899,
+    "mae": 1.1574,
+    "n_samples": 1584
+  },
+  "test": {
+    "r2": 0.5866,
+    "rmse": 2.5511,
+    "mae": 1.2854,
+    "n_samples": 396
+  },
+  "feature_importance_xgb": [
+    {
+      "name": "ndbi_mean",
+      "display_name": "Built-up Index (NDBI)",
+      "importance": 0.5288
+    },
+    {
+      "name": "road_density",
+      "display_name": "Road Density",
+      "importance": 0.3739
+    },
+    {
+      "name": "building_density",
+      "display_name": "Building Density",
+      "importance": 0.0728
+    },
+    {
+      "name": "ndvi_mean",
+      "display_name": "Vegetation Index (NDVI)",
+      "importance": 0.0143
+    },
+    {
+      "name": "dist_to_green_m",
+      "display_name": "Distance to Green Space (m)",
+      "importance": 0.0101
+    }
+  ],
+  "feature_importance_shap": [
+    {
+      "name": "ndbi_mean",
+      "display_name": "Built-up Index (NDBI)",
+      "mean_abs_shap": 1.6508
+    },
+    {
+      "name": "road_density",
+      "display_name": "Road Density",
+      "mean_abs_shap": 1.0306
+    },
+    {
+      "name": "building_density",
+      "display_name": "Building Density",
+      "mean_abs_shap": 0.3914
+    },
+    {
+      "name": "ndvi_mean",
+      "display_name": "Vegetation Index (NDVI)",
+      "mean_abs_shap": 0.1069
+    },
+    {
+      "name": "dist_to_green_m",
+      "display_name": "Distance to Green Space (m)",
+      "mean_abs_shap": 0.0256
+    }
+  ],
+  "total_cells": 1980,
+  "target_variable": "lst_mean",
+  "features_used": [
+    "ndvi_mean",
+    "ndbi_mean",
+    "building_density",
+    "road_density",
+    "dist_to_green_m"
+  ]
+}

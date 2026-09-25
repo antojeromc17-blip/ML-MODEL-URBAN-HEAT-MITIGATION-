@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kochi Urban Heat Island (UHI) AI Observatory</title>
+  <meta name="description" content="AI-driven Urban Heat Island detection, SHAP explainability, and counterfactual greening scenario simulator for Kochi, Kerala.">
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-temperature-arrow-up"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Kochi UHI AI Observatory</h1>
+          <span class="badge live-badge"><span class="pulse-dot"></span> Landsat 8 & Sentinel-2 AI Engine</span>
+        </div>
+      </div>
+      
+      <!-- Key Statistics Strip -->
+      <div class="stats-strip" id="statsStrip">
+        <div class="stat-pill" title="Average Land Surface Temperature across Kochi">
+          <span class="stat-label">Avg LST</span>
+          <span class="stat-val" id="statAvgLst">34.2°C</span>
+        </div>
+        <div class="stat-pill danger" title="Critical thermal hotspots flagged (z-score > 1.5)">
+          <span class="stat-label">Hotspots</span>
+          <span class="stat-val" id="statHotspots">37 cells</span>
+        </div>
+        <div class="stat-pill warning" title="Highest observed surface temperature">
+          <span class="stat-label">Peak Temp</span>
+          <span class="stat-val" id="statMaxLst">43.1°C</span>
+        </div>
+        <div class="stat-pill success" title="Maximum counterfactual cooling potential from +30% vegetation">
+          <span class="stat-label">Max Cooling</span>
+          <span class="stat-val" id="statCooling">4.68°C</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <button class="btn btn-glass" id="btnOpenModelInfo">
+          <i class="fa-solid fa-brain"></i> Model & SHAP
+        </button>
+        <button class="btn btn-primary" id="btnResetView">
+          <i class="fa-solid fa-location-crosshairs"></i> Reset View
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace: Map + Floating Panels -->
+    <div class="main-workspace">
+      <!-- Leaflet Map Canvas -->
+      <div id="map" class="map-container"></div>
+
+      <!-- Left Floating Control Panel -->
+      <aside class="floating-panel map-controls-panel">
+        <div class="panel-section">
+          <div class="section-title">
+            <i class="fa-solid fa-layer-group"></i> Visualization Layer
+          </div>
+          <div class="view-mode-buttons">
+            <button class="mode-btn active" data-mode="lst">
+              <i class="fa-solid fa-fire"></i> LST Temp
+            </button>
+            <button class="mode-btn" data-mode="scenario">
+              <i class="fa-solid fa-leaf"></i> Scenario
+            </button>
+            <button class="mode-btn" data-mode="delta">
+              <i class="fa-solid fa-snowflake"></i> Cooling Delta
+            </button>
+            <button class="mode-btn" data-mode="ndvi">
+              <i class="fa-solid fa-tree"></i> NDVI Green
+            </button>
+            <button class="mode-btn" data-mode="ndbi">
+              <i class="fa-solid fa-city"></i> NDBI Built
+            </button>
+          </div>
+        </div>
+
+        <!-- Counterfactual Scenario Simulator Slider -->
+        <div class="panel-section scenario-slider-section">
+          <div class="slider-header">
+            <span class="section-title">
+              <i class="fa-solid fa-sliders"></i> Greening Simulator
+            </span>
+            <span class="scenario-badge" id="sliderValueBadge">+0% Baseline</span>
+          </div>
+          <input type="range" min="0" max="30" step="10" value="0" id="scenarioSlider" class="custom-slider">
+          <div class="slider-ticks">
+            <span class="tick active" data-val="0">Baseline</span>
+            <span class="tick" data-val="10">+10%</span>
+            <span class="tick" data-val="20">+20%</span>
+            <span class="tick" data-val="30">+30%</span>
+          </div>
+          <div class="scenario-impact-box" id="scenarioImpactBox">
+            <div class="impact-row">
+              <span>Hotspot Avg Cooling:</span>
+              <strong id="hotspotAvgCooling">0.00°C</strong>
+            </div>
+            <div class="impact-row">
+              <span>City-wide Max Cooling:</span>
+              <strong id="cityMaxCooling">0.00°C</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotspot Quick Navigator -->
+        <div class="panel-section">
+          <div class="section-title">
+            <i class="fa-solid fa-crosshairs"></i> Hotspot Clusters (11)
+          </div>
+          <select id="hotspotSelect" class="custom-select">
+            <option value="">-- Jump to Hotspot Zone --</option>
+            <option value="Zone 1">Zone 1 (Central Commercial - 21 cells)</option>
+            <option value="Zone 4">Zone 4 (North Industrial - 3 cells)</option>
+            <option value="Zone 10">Zone 10 (Port & Transit - 4 cells)</option>
+            <option value="Zone 2">Zone 2 (East Corridor - 2 cells)</option>
+            <option value="hottest">Peak Heat Cell (#412, 43.1°C)</option>
+          </select>
+        </div>
+
+        <!-- Dynamic Map Legend -->
+        <div class="panel-section legend-section">
+          <div class="section-title" id="legendTitle">Surface Temperature (°C)</div>
+          <div class="color-ramp" id="legendRamp"></div>
+          <div class="ramp-labels">
+            <span id="legendMin">20°C</span>
+            <span id="legendMid">34°C</span>
+            <span id="legendMax">43°C</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Floating Cell Detail Drawer -->
+      <aside class="floating-panel cell-drawer" id="cellDrawer">
+        <div class="drawer-header">
+          <div class="cell-title-wrap">
+            <span class="drawer-cell-tag" id="drawerCellTag">Cell #---</span>
+            <span class="zone-badge" id="drawerZoneBadge">Neutral</span>
+          </div>
+          <button class="btn-icon" id="btnCloseDrawer" title="Close details">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="drawer-body">
+          <!-- Main Temp Display -->
+          <div class="temp-hero">
+            <div class="temp-val-wrap">
+              <span class="temp-big" id="cellTemp">--.-</span>
+              <span class="temp-unit">°C</span>
+            </div>
+            <div class="temp-meta">
+              <span class="temp-sub">Observed LST</span>
+              <span class="temp-zscore" id="cellZScore">Z-score: +0.00</span>
+            </div>
+          </div>
+
+          <!-- Counterfactual Scenario Cooling Cards -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Counterfactual Greening
+            </div>
+            <div class="scenario-grid">
+              <div class="scenario-card" id="cardScenario10">
+                <span class="scen-pct">+10% Green</span>
+                <span class="scen-val" id="scenVal10">--.-°C</span>
+                <span class="scen-desc">cooling</span>
+              </div>
+              <div class="scenario-card" id="cardScenario20">
+                <span class="scen-pct">+20% Green</span>
+                <span class="scen-val" id="scenVal20">--.-°C</span>
+                <span class="scen-desc">cooling</span>
+              </div>
+              <div class="scenario-card" id="cardScenario30">
+                <span class="scen-pct">+30% Green</span>
+                <span class="scen-val" id="scenVal30">--.-°C</span>
+                <span class="scen-desc">cooling</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHAP Explainer Chart -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <i class="fa-solid fa-chart-column"></i> Local SHAP Feature Attribution
+            </div>
+            <p class="chart-caption">Positive values increase heat; negative values cool.</p>
+            <div class="chart-container">
+              <canvas id="shapChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Urban Morphology Metrics Table -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <i class="fa-solid fa-city"></i> Cell Urban Indicators
+            </div>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="m-label">NDBI (Built-up)</span>
+                <span class="m-val" id="cellNdbi">-.--</span>
+              </div>
+              <div class="metric-item">
+                <span class="m-label">NDVI (Vegetation)</span>
+                <span class="m-val" id="cellNdvi">-.--</span>
+              </div>
+              <div class="metric-item">
+                <span class="m-label">Building Density</span>
+                <span class="m-val" id="cellBldgDensity">-.--%</span>
+              </div>
+              <div class="metric-item">
+                <span class="m-label">Road Density</span>
+                <span class="m-val" id="cellRoadDensity">-.--</span>
+              </div>
+              <div class="metric-item">
+                <span class="m-label">Dist to Green Space</span>
+                <span class="m-val" id="cellDistGreen">-- m</span>
+              </div>
+              <div class="metric-item">
+                <span class="m-label">Hotspot Cluster</span>
+                <span class="m-val" id="cellCluster">None</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Model & SHAP Explainer Modal -->
+    <div class="modal-overlay" id="modelModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i class="fa-solid fa-microchip"></i> Physics-Informed ML & SHAP Architecture
+          </div>
+          <button class="btn-icon" id="btnCloseModal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-grid">
+            <div class="modal-col">
+              <h3>Model Configuration</h3>
+              <ul class="spec-list">
+                <li><strong>Algorithm:</strong> XGBRegressor with Monotonic Constraints</li>
+                <li><strong>Physics Monotonicity:</strong> NDVI (-1), NDBI (+1), Building (+1), Road (+1), Green Dist (+1)</li>
+                <li><strong>Cells Evaluated:</strong> 1,980 uniform 500m × 500m cells</li>
+                <li><strong>Training / Test Split:</strong> 1,584 train / 396 test</li>
+                <li><strong>Physics Sign Violations:</strong> 0 cells (0.00% negative cooling)</li>
+              </ul>
+
+              <h3 style="margin-top: 1.5rem;">Global SHAP Importance (Ranking)</h3>
+              <div class="chart-container" style="height: 220px;">
+                <canvas id="globalShapChart"></canvas>
+              </div>
+            </div>
+
+            <div class="modal-col">
+              <h3>SHAP Beeswarm Summary Plot</h3>
+              <div class="beeswarm-wrap">
+                <img src="/model/shap_summary.png" alt="SHAP Beeswarm Plot" id="beeswarmImg" class="modal-img" onerror="this.src='/api/shap_image';">
+              </div>
+              <div class="audit-callout">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div>
+                  <strong>Audit Verified:</strong> 15 collinear redundant features pruned down to 5 independent physical drivers, completely eliminating attribution flipping.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
