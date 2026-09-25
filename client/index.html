@@ -34,9 +34,18 @@
           <i class="fa-solid fa-temperature-arrow-up"></i>
         </div>
         <div class="brand-text">
-          <h1>Kochi UHI AI Observatory</h1>
-          <span class="badge live-badge"><span class="pulse-dot"></span> Landsat 8 & Sentinel-2 AI Engine</span>
+          <h1 id="appTitle">Urban Heat Island AI Observatory</h1>
+          <span class="badge live-badge"><span class="pulse-dot"></span> Multi-City Satellite AI Engine</span>
         </div>
+      </div>
+      
+      <!-- City Switcher -->
+      <div class="city-selector-box" style="display: flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 12px; border-radius: 8px;">
+        <i class="fa-solid fa-location-dot" style="color: #38bdf8; font-size: 0.9rem;"></i>
+        <select id="citySelect" style="background: transparent; color: #f8fafc; border: none; font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer; padding-right: 4px;">
+          <option value="kochi" style="background: #1e293b; color: #f8fafc;" selected>Kochi</option>
+          <option value="chennai" style="background: #1e293b; color: #f8fafc;">Chennai</option>
+        </select>
       </div>
       
       <!-- Key Statistics Strip -->

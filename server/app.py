@@ -22,22 +22,34 @@ CORS(app)
 # ---------------------------------------------------------------------------
 # Load data on startup
 # ---------------------------------------------------------------------------
-DATA_PATH = DATA_DIR / "grid_output.geojson"
+# ---------------------------------------------------------------------------
+# Load data on startup (Multi-city: Kochi & Chennai)
+# ---------------------------------------------------------------------------
+KOCHI_PATH = DATA_DIR / "grid_output.geojson"
+CHENNAI_PATH = DATA_DIR / "chennai" / "grid_output.geojson"
 
-print(f"Loading data from {DATA_PATH}...")
-with open(DATA_PATH, "r") as f:
-    grid_data = json.load(f)
+cities_data = {}
+cell_indices = {}
 
+if KOCHI_PATH.exists():
+    print(f"Loading Kochi data from {KOCHI_PATH}...")
+    with open(KOCHI_PATH, "r") as f:
+        cities_data["kochi"] = json.load(f)
+        cell_indices["kochi"] = {f["properties"]["cell_id"]: f for f in cities_data["kochi"].get("features", [])}
+
+if CHENNAI_PATH.exists():
+    print(f"Loading Chennai data from {CHENNAI_PATH}...")
+    with open(CHENNAI_PATH, "r") as f:
+        cities_data["chennai"] = json.load(f)
+        cell_indices["chennai"] = {f["properties"]["cell_id"]: f for f in cities_data["chennai"].get("features", [])}
+
+# Default references
+grid_data = cities_data.get("kochi") or list(cities_data.values())[0]
 metadata = grid_data.get("metadata", {})
 features = grid_data.get("features", [])
+cell_index = cell_indices.get("kochi", {})
 
-# Build cell index for O(1) lookups
-cell_index = {}
-for feature in features:
-    cell_index[feature["properties"]["cell_id"]] = feature
-
-print(f"Loaded {len(features)} grid cells")
-print(f"Hotspots: {metadata.get('hotspot_count', 0)}, Coldspots: {metadata.get('coldspot_count', 0)}")
+print(f"Loaded cities: {list(cities_data.keys())}")
 
 
 # ---------------------------------------------------------------------------
@@ -56,10 +68,23 @@ def serve_model_file(filename):
 # ---------------------------------------------------------------------------
 # API Routes
 # ---------------------------------------------------------------------------
+@app.route("/api/cities")
+def get_cities():
+    """List available cities"""
+    return jsonify({
+        "cities": [
+            {"id": cid, "name": cdata.get("metadata", {}).get("city", cid.title())}
+            for cid, cdata in cities_data.items()
+        ]
+    })
+
+
 @app.route("/api/grid")
 def get_grid():
-    """Full GeoJSON FeatureCollection"""
-    return jsonify(grid_data)
+    """Full GeoJSON FeatureCollection for requested city"""
+    city = request.args.get("city", "kochi").lower()
+    cdata = cities_data.get(city) or cities_data.get("kochi")
+    return jsonify(cdata)
 
 
 @app.route("/api/grid/<int:cell_id>")
@@ -98,22 +123,27 @@ def get_coldspots():
 
 @app.route("/api/stats")
 def get_stats():
-    """Summary statistics for the dashboard"""
-    lsts = [f["properties"]["lst"] for f in features]
+    """Summary statistics for the dashboard for the requested city"""
+    city = request.args.get("city", "kochi").lower()
+    cdata = cities_data.get(city) or cities_data.get("kochi")
+    c_meta = cdata.get("metadata", {})
+    c_features = cdata.get("features", [])
+    lsts = [f["properties"]["lst"] for f in c_features if f["properties"].get("lst") is not None]
     return jsonify({
-        "total_cells": len(features),
-        "hotspot_count": metadata.get("hotspot_count", 0),
-        "coldspot_count": metadata.get("coldspot_count", 0),
-        "lst_mean": metadata.get("lst_mean"),
-        "lst_std": metadata.get("lst_std"),
+        "city": c_meta.get("city", city.title()),
+        "total_cells": len(c_features),
+        "hotspot_count": c_meta.get("hotspot_count", 0),
+        "coldspot_count": c_meta.get("coldspot_count", 0),
+        "lst_mean": c_meta.get("lst_mean"),
+        "lst_std": c_meta.get("lst_std"),
         "lst_min": min(lsts) if lsts else None,
         "lst_max": max(lsts) if lsts else None,
-        "hotspot_threshold": metadata.get("hotspot_threshold"),
-        "zone_distribution": metadata.get("zone_distribution"),
-        "scenario_summary": metadata.get("scenario_summary"),
-        "global_shap_importance": metadata.get("global_shap_importance"),
-        "model_metrics": metadata.get("model_metrics"),
-        "feature_names": metadata.get("feature_names"),
+        "hotspot_threshold": c_meta.get("hotspot_threshold"),
+        "zone_distribution": c_meta.get("zone_distribution"),
+        "scenario_summary": c_meta.get("scenario_summary"),
+        "global_shap_importance": c_meta.get("global_shap_importance"),
+        "model_metrics": c_meta.get("model_metrics"),
+        "feature_names": c_meta.get("feature_names"),
     })
 
 

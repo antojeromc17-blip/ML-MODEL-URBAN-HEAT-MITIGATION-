@@ -82,24 +82,39 @@ function initMap() {
 }
 
 // 2. Fetch and Load Grid Data
-async function loadGridData() {
+async function loadGridData(city = 'kochi') {
   try {
+    state.currentCity = city;
     let response;
     try {
-      response = await fetch('/api/grid');
+      response = await fetch(`/api/grid?city=${city}`);
       if (!response.ok) throw new Error('API fetch failed');
     } catch (e) {
-      // Fallback directly to static file if running from file system or direct static route
-      response = await fetch('../data/grid_output.geojson');
+      // Fallback
+      const fallbackUrl = city === 'chennai' ? '../data/chennai/grid_output.geojson' : '../data/grid_output.geojson';
+      response = await fetch(fallbackUrl);
     }
 
     state.geoData = await response.json();
-    populateStats(state.geoData.metadata);
+    const meta = state.geoData.metadata || {};
+    
+    // Update title
+    const appTitle = document.getElementById('appTitle');
+    if (appTitle) {
+      appTitle.textContent = `${meta.city || city.toUpperCase()} UHI AI Observatory`;
+    }
+
+    populateStats(meta);
     renderGridLayer();
     initGlobalShapChart();
+
+    // Auto-fit map to the selected city's bounds
+    if (state.geoJsonLayer && state.geoJsonLayer.getBounds().isValid()) {
+      state.map.fitBounds(state.geoJsonLayer.getBounds(), { padding: [20, 20] });
+    }
   } catch (err) {
     console.error('Failed to load grid data:', err);
-    alert('Unable to load grid data. Ensure server is running on http://localhost:3001');
+    alert(`Unable to load data for ${city}. Ensure server is running on http://localhost:3001`);
   }
 }
 
@@ -483,4 +498,16 @@ function initEventListeners() {
       selectCell(targetFeature);
     }
   });
+
+  // City Selector
+  const citySelect = document.getElementById('citySelect');
+  if (citySelect) {
+    citySelect.addEventListener('change', (e) => {
+      const selectedCity = e.target.value;
+      // Close drawer if open
+      document.getElementById('cellDrawer').classList.add('closed');
+      state.selectedCell = null;
+      loadGridData(selectedCity);
+    });
+  }
 }
