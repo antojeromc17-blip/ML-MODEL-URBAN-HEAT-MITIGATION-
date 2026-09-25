@@ -28,6 +28,7 @@ CORS(app)
 KOCHI_PATH = DATA_DIR / "grid_output.geojson"
 CHENNAI_PATH = DATA_DIR / "chennai" / "grid_output.geojson"
 BANGALORE_PATH = DATA_DIR / "bangalore" / "grid_output.geojson"
+DELHI_PATH = DATA_DIR / "delhi" / "grid_output.geojson"
 
 cities_data = {}
 cell_indices = {}
@@ -49,6 +50,12 @@ if BANGALORE_PATH.exists():
     with open(BANGALORE_PATH, "r") as f:
         cities_data["bangalore"] = json.load(f)
         cell_indices["bangalore"] = {f["properties"]["cell_id"]: f for f in cities_data["bangalore"].get("features", [])}
+
+if DELHI_PATH.exists():
+    print(f"Loading Delhi data from {DELHI_PATH}...")
+    with open(DELHI_PATH, "r") as f:
+        cities_data["delhi"] = json.load(f)
+        cell_indices["delhi"] = {f["properties"]["cell_id"]: f for f in cities_data["delhi"].get("features", [])}
 
 # Default references
 grid_data = cities_data.get("kochi") or list(cities_data.values())[0]
