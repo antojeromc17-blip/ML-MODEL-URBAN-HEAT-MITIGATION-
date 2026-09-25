@@ -29,6 +29,7 @@ KOCHI_PATH = DATA_DIR / "grid_output.geojson"
 CHENNAI_PATH = DATA_DIR / "chennai" / "grid_output.geojson"
 BANGALORE_PATH = DATA_DIR / "bangalore" / "grid_output.geojson"
 DELHI_PATH = DATA_DIR / "delhi" / "grid_output.geojson"
+MUMBAI_PATH = DATA_DIR / "mumbai" / "grid_output.geojson"
 
 cities_data = {}
 cell_indices = {}
@@ -56,6 +57,12 @@ if DELHI_PATH.exists():
     with open(DELHI_PATH, "r") as f:
         cities_data["delhi"] = json.load(f)
         cell_indices["delhi"] = {f["properties"]["cell_id"]: f for f in cities_data["delhi"].get("features", [])}
+
+if MUMBAI_PATH.exists():
+    print(f"Loading Mumbai data from {MUMBAI_PATH}...")
+    with open(MUMBAI_PATH, "r") as f:
+        cities_data["mumbai"] = json.load(f)
+        cell_indices["mumbai"] = {f["properties"]["cell_id"]: f for f in cities_data["mumbai"].get("features", [])}
 
 # Default references
 grid_data = cities_data.get("kochi") or list(cities_data.values())[0]
