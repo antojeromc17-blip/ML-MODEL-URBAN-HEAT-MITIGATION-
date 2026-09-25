@@ -91,7 +91,7 @@ async function loadGridData(city = 'kochi') {
       if (!response.ok) throw new Error('API fetch failed');
     } catch (e) {
       // Fallback
-      const fallbackUrl = city === 'chennai' ? '../data/chennai/grid_output.geojson' : '../data/grid_output.geojson';
+      const fallbackUrl = city === 'kochi' ? '../data/grid_output.geojson' : `../data/${city}/grid_output.geojson`;
       response = await fetch(fallbackUrl);
     }
 
