@@ -15,26 +15,28 @@ const state = {
   cellLayers: new Map(), // cell_id -> Leaflet polygon layer
 };
 
-// Heat Scale Palette
+// Heat Scale Palette - Dynamically tuned for Pan-India temperature range (20°C to 50°C)
 const COLOR_RAMPS = {
   lst: [
-    { t: 20, c: '#313695' },
-    { t: 26, c: '#4575b4' },
-    { t: 30, c: '#74add1' },
-    { t: 33, c: '#abd9e9' },
-    { t: 35, c: '#fee090' },
-    { t: 38, c: '#fdae61' },
-    { t: 40, c: '#f46d43' },
-    { t: 41.5, c: '#d73027' },
-    { t: 43.5, c: '#a50026' }
+    { t: 15, c: '#1e3a8a' }, // Deep Blue (Water/Wetland)
+    { t: 24, c: '#3b82f6' }, // Cool Blue
+    { t: 30, c: '#38bdf8' }, // Cyan
+    { t: 34, c: '#fef08a' }, // Soft Yellow (Ambient Baseline)
+    { t: 37, c: '#f59e0b' }, // Amber (Warm)
+    { t: 40, c: '#f97316' }, // Orange (Very Warm)
+    { t: 43, c: '#ef4444' }, // Red (Thermal Alert)
+    { t: 46, c: '#b91c1c' }, // Crimson (Critical Hotspot)
+    { t: 50, c: '#7f1d1d' }  // Deep Maroon (Extreme Urban Core)
   ],
   delta: [
-    { t: 0.0, c: '#1e293b' },
-    { t: 0.5, c: '#0f766e' },
-    { t: 1.0, c: '#0d9488' },
-    { t: 1.8, c: '#14b8a6' },
-    { t: 2.8, c: '#2dd4bf' },
-    { t: 4.5, c: '#5eead4' }
+    { t: 0.0, c: '#0f172a' }, // Neutral / Slate
+    { t: 0.5, c: '#064e3b' }, // Dark Emerald
+    { t: 1.5, c: '#059669' }, // Vibrant Green
+    { t: 3.5, c: '#10b981' }, // Mint Green
+    { t: 6.5, c: '#14b8a6' }, // Teal
+    { t: 10.0, c: '#2dd4bf' }, // Bright Turquoise
+    { t: 15.0, c: '#5eead4' }, // Vivid Cyan Glow
+    { t: 18.0, c: '#a7f3d0' }  // Ultra High Cooling
   ],
   ndvi: [
     { t: -0.3, c: '#1e293b' },
@@ -122,14 +124,24 @@ async function loadGridData(city = 'kochi') {
 function populateStats(meta) {
   if (!meta) return;
   document.getElementById('statAvgLst').textContent = `${meta.lst_mean?.toFixed(1) || '34.2'}°C`;
-  document.getElementById('statHotspots').textContent = `${meta.hotspot_count || 37} cells`;
+  document.getElementById('statHotspots').textContent = `${meta.hotspot_count !== undefined ? meta.hotspot_count : 0} cells`;
   
+  // Real dynamic peak temperature from loaded city cells
+  const feats = (state.geoData && state.geoData.features) || [];
+  const lsts = feats.map(f => f.properties.lst).filter(v => v != null);
+  const statMaxLstEl = document.getElementById('statMaxLst');
+  if (statMaxLstEl && lsts.length > 0) {
+    statMaxLstEl.textContent = `${Math.max(...lsts).toFixed(1)}°C`;
+  }
+
   const scenarios = meta.scenario_summary || [];
   const s30 = scenarios.find(s => s.scenario === 'ndvi_plus_30');
   if (s30) {
     document.getElementById('statCooling').textContent = `${s30.max_cooling_c?.toFixed(2)}°C`;
-    document.getElementById('hotspotAvgCooling').textContent = `${s30.hotspot_avg_cooling_c?.toFixed(2)}°C`;
-    document.getElementById('cityMaxCooling').textContent = `${s30.max_cooling_c?.toFixed(2)}°C`;
+    const hsEl = document.getElementById('hotspotAvgCooling');
+    if (hsEl) hsEl.textContent = `${s30.hotspot_avg_cooling_c?.toFixed(2)}°C`;
+    const cMaxEl = document.getElementById('cityMaxCooling');
+    if (cMaxEl) cMaxEl.textContent = `${s30.max_cooling_c?.toFixed(2)}°C`;
   }
 }
 
@@ -255,19 +267,30 @@ function updateLegend() {
   const minEl = document.getElementById('legendMin');
   const midEl = document.getElementById('legendMid');
   const maxEl = document.getElementById('legendMax');
+  if (!rampEl || !titleEl || !minEl || !midEl || !maxEl) return;
+
+  const meta = (state.geoData && state.geoData.metadata) || {};
+  const feats = (state.geoData && state.geoData.features) || [];
+  const lsts = feats.map(f => f.properties.lst).filter(v => v != null);
+  const minLst = lsts.length ? Math.min(...lsts) : 20;
+  const maxLst = lsts.length ? Math.max(...lsts) : 48;
+  const avgLst = meta.lst_mean || ((minLst + maxLst) / 2);
 
   if (state.viewMode === 'lst' || state.viewMode === 'scenario') {
     titleEl.textContent = state.viewMode === 'scenario' ? `Simulated LST (+${state.greeningPct}% Green)` : 'Surface Temperature (°C)';
-    rampEl.style.background = 'linear-gradient(to right, #313695, #4575b4, #74add1, #abd9e9, #fee090, #fdae61, #f46d43, #d73027, #a50026)';
-    minEl.textContent = '20°C';
-    midEl.textContent = '34°C';
-    maxEl.textContent = '43°C';
+    rampEl.style.background = 'linear-gradient(to right, #1e3a8a, #3b82f6, #38bdf8, #fef08a, #f59e0b, #f97316, #ef4444, #b91c1c, #7f1d1d)';
+    minEl.textContent = `${Math.round(minLst)}°C`;
+    midEl.textContent = `${avgLst.toFixed(1)}°C`;
+    maxEl.textContent = `${Math.round(maxLst)}°C`;
   } else if (state.viewMode === 'delta') {
     titleEl.textContent = `Cooling Potential (+${state.greeningPct}% Green)`;
-    rampEl.style.background = 'linear-gradient(to right, #1e293b, #0f766e, #0d9488, #14b8a6, #2dd4bf, #5eead4)';
+    rampEl.style.background = 'linear-gradient(to right, #0f172a, #064e3b, #059669, #10b981, #14b8a6, #2dd4bf, #5eead4, #a7f3d0)';
+    const scenarios = meta.scenario_summary || [];
+    const sCurr = scenarios.find(s => s.scenario === `ndvi_plus_${state.greeningPct}`) || scenarios[scenarios.length - 1];
+    const maxDelta = sCurr ? sCurr.max_cooling_c : 5.0;
     minEl.textContent = '0.0°C';
-    midEl.textContent = '1.8°C';
-    maxEl.textContent = '4.5°C';
+    midEl.textContent = `${(maxDelta / 2).toFixed(1)}°C`;
+    maxEl.textContent = `${maxDelta.toFixed(1)}°C`;
   } else if (state.viewMode === 'ndvi') {
     titleEl.textContent = 'Vegetation Index (NDVI)';
     rampEl.style.background = 'linear-gradient(to right, #1e293b, #a16207, #ca8a04, #65a30d, #16a34a, #15803d)';
@@ -473,31 +496,34 @@ function initEventListeners() {
     if (e.target === modal) modal.classList.remove('open');
   });
 
-  // Hotspot Quick Navigator
-  document.getElementById('hotspotSelect').addEventListener('change', (e) => {
-    const val = e.target.value;
-    if (!val || !state.geoData) return;
+  // Hotspot Quick Navigator (if present in DOM)
+  const hotspotSelect = document.getElementById('hotspotSelect');
+  if (hotspotSelect) {
+    hotspotSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (!val || !state.geoData) return;
 
-    let targetFeature = null;
-    if (val === 'hottest') {
-      let maxL = -Infinity;
-      state.geoData.features.forEach(f => {
-        if (f.properties.lst > maxL) {
-          maxL = f.properties.lst;
-          targetFeature = f;
-        }
-      });
-    } else {
-      targetFeature = state.geoData.features.find(f => f.properties.hotspot_zone === val);
-    }
+      let targetFeature = null;
+      if (val === 'hottest') {
+        let maxL = -Infinity;
+        state.geoData.features.forEach(f => {
+          if (f.properties.lst > maxL) {
+            maxL = f.properties.lst;
+            targetFeature = f;
+          }
+        });
+      } else {
+        targetFeature = state.geoData.features.find(f => f.properties.hotspot_zone === val);
+      }
 
-    if (targetFeature) {
-      const coords = targetFeature.geometry.coordinates[0];
-      const bounds = L.latLngBounds(coords.map(c => [c[1], c[0]]));
-      state.map.fitBounds(bounds, { maxZoom: 14, padding: [100, 100] });
-      selectCell(targetFeature);
-    }
-  });
+      if (targetFeature) {
+        const coords = targetFeature.geometry.coordinates[0];
+        const bounds = L.latLngBounds(coords.map(c => [c[1], c[0]]));
+        state.map.fitBounds(bounds, { maxZoom: 14, padding: [100, 100] });
+        selectCell(targetFeature);
+      }
+    });
+  }
 
   // City Selector
   const citySelect = document.getElementById('citySelect');
