@@ -1,0 +1,477 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>shadenet: kochi_central [live] — Cell #142 Diagnosis</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Montserrat:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Bebas+Neue&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" class="">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "primary-container": "#f17f35",
+          "error-container": "#93000a",
+          "surface-container-low": "#1c1b1e",
+          "on-error-container": "#ffdad6",
+          "surface-tint": "#ffb68e",
+          "inverse-on-surface": "#313032",
+          "inverse-primary": "#9b4500",
+          "secondary": "#b8c3ff",
+          "primary": "#ffb68e",
+          "background": "#131315",
+          "surface-variant": "#353437",
+          "surface-container-high": "#2a2a2c",
+          "surface-container-highest": "#353437",
+          "surface-container": "#201f22",
+          "surface-container-lowest": "#0e0e10",
+          "surface-dim": "#131315",
+          "surface-bright": "#39393b",
+          "surface": "#131315",
+          "on-surface": "#e8e8e8",
+          "on-surface-variant": "#a58c7f",
+          "outline": "#7a757e",
+          "outline-variant": "#39393b",
+          "on-primary-container": "#331200",
+          "on-primary": "#532200"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "fontFamily": {
+          "body-regular": ["Montserrat", "sans-serif"],
+          "data-metric": ["JetBrains Mono", "monospace"],
+          "label-code": ["JetBrains Mono", "monospace"],
+          "headline-lg": ["Montserrat", "sans-serif"],
+          "data-display": ["JetBrains Mono", "monospace"],
+          "label-telemetry": ["JetBrains Mono", "monospace"],
+          "body-compact": ["Montserrat", "sans-serif"],
+          "headline-md": ["Montserrat", "sans-serif"]
+        },
+        "fontSize": {
+          "body-regular": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+          "data-metric": ["20px", {"lineHeight": "26px", "fontWeight": "600"}],
+          "label-code": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+          "headline-lg": ["24px", {"lineHeight": "30px", "fontWeight": "800"}],
+          "headline-xl": ["36px", {"lineHeight": "44px", "fontWeight": "900"}],
+          "data-display": ["32px", {"lineHeight": "36px", "fontWeight": "700"}],
+          "label-telemetry": ["10px", {"lineHeight": "12px", "fontWeight": "400"}],
+          "body-compact": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    @keyframes bracket-pulse {
+      0%, 100% { border-color: #f17f35; box-shadow: 0 0 12px rgba(241, 127, 53, 0.4); }
+      50% { border-color: #39393b; box-shadow: 0 0 0 0 rgba(241, 127, 53, 0); }
+    }
+    .pulsing-bracket {
+      animation: bracket-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>
+</head>
+<body class="bg-[#0e0e10] text-[#e8e8e8] antialiased overflow-hidden select-none font-body-compact text-body-compact">
+<!-- TopNavBar -->
+<header class="w-full px-4 h-12 flex items-center justify-between border-b border-[#39393b] bg-[#131315] z-30 relative text-[#e8e8e8]">
+<div class="flex items-center gap-3">
+<span class="text-label-code font-label-code uppercase tracking-widest text-[#e8e8e8] flex items-center gap-2 font-mono">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-[#f17f35] shadow-[0_0_8px_#f17f35]"></span>
+      SHADENET: KOCHI_CENTRAL [LIVE]
+    </span>
+<span class="text-[#a58c7f] font-mono text-label-telemetry px-2 py-0.5 border border-[#39393b] bg-[#1c1b1e] hidden sm:inline-block">
+      GRID-LOC: 09°58′N 76°17′E
+    </span>
+</div>
+<!-- Telemetry Navigation Readout Links -->
+<nav class="hidden md:flex items-center gap-6">
+<div class="border-b-2 border-[#f17f35] text-[#f17f35] font-mono text-label-code py-1 transition-colors">
+      LST: 32.1°C
+    </div>
+<div class="text-[#a58c7f] font-mono text-label-code py-1 hover:text-[#f17f35] transition-colors">
+      Hotspots: 47
+    </div>
+<div class="text-[#a58c7f] font-mono text-label-code py-1 hover:text-[#f17f35] transition-colors">
+      Max ΔT: −2.1°C
+    </div>
+<div class="text-[#a58c7f] font-mono text-label-code py-1 hover:text-[#f17f35] transition-colors">
+      Inference: Online
+    </div>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-3">
+<button class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-[#1c1b1e] border border-[#39393b] hover:border-[#a58c7f] font-mono text-label-code text-[#e8e8e8] transition-colors">
+<span class="material-symbols-outlined text-[15px] text-[#f17f35]">terminal</span>
+      Export Telemetry
+    </button>
+<button class="px-3 py-1 bg-[#f17f35] text-[#0e0e10] font-mono text-label-code font-bold hover:bg-[#ffb68e] transition-colors shadow-[0_0_12px_rgba(241,127,53,0.35)]">
+      Auto Tour
+    </button>
+<div class="flex items-center gap-1 border-l border-[#39393b] pl-2">
+<button aria-label="Terminal Tune" class="p-1 text-[#a58c7f] hover:text-[#e8e8e8] transition-colors">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+<button aria-label="Notifications" class="p-1 text-[#a58c7f] hover:text-[#e8e8e8] transition-colors">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex w-full h-[calc(100vh-3rem)] relative overflow-hidden bg-[#0e0e10]">
+<!-- Left Dimmed Map / Background Area: Deep Dark Kochi Grid -->
+<div class="absolute inset-0 flex w-full h-full bg-[#0a0a0c] pointer-events-none">
+<!-- SideNav Representation in Background Canvas -->
+<aside class="h-full w-64 flex flex-col justify-between p-2 border-r border-[#39393b]/40 bg-[#131315]/80 shrink-0 hidden md:flex opacity-60">
+<div>
+<div class="p-2 mb-2 border-b border-[#39393b]/50">
+<div class="text-label-code font-mono text-[#e8e8e8] font-bold tracking-tight">Kochi UHI Diagnostic</div>
+<div class="text-[#a58c7f] text-label-telemetry font-mono mt-0.5">Zone 07: Coastal Sector</div>
+</div>
+<div class="space-y-1">
+<div class="border-l-2 border-[#f17f35] text-[#f17f35] bg-[#1c1b1e] pl-3 py-2 flex items-center gap-3 font-mono text-label-code">
+<span class="material-symbols-outlined text-[16px]">grid_view</span>
+            Choropleth Grid
+          </div>
+<div class="text-[#a58c7f] pl-3 py-2 flex items-center gap-3 font-mono text-label-code">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+            SHAP Influence
+          </div>
+<div class="text-[#a58c7f] pl-3 py-2 flex items-center gap-3 font-mono text-label-code">
+<span class="material-symbols-outlined text-[16px]">timeline</span>
+            Temporal Scrubber
+          </div>
+<div class="text-[#a58c7f] pl-3 py-2 flex items-center gap-3 font-mono text-label-code">
+<span class="material-symbols-outlined text-[16px]">sensors</span>
+            Sensor Nodes
+          </div>
+<div class="text-[#a58c7f] pl-3 py-2 flex items-center gap-3 font-mono text-label-code">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+            Telemetry Logs
+          </div>
+</div>
+</div>
+<div class="pt-2 border-t border-[#39393b]/50">
+<div class="text-[#a58c7f] pl-3 py-1 flex items-center gap-2 font-mono text-label-telemetry">
+<span class="material-symbols-outlined text-[14px]">tune</span> Diagnostics
+        </div>
+<div class="text-[#a58c7f] pl-3 py-1 flex items-center gap-2 font-mono text-label-telemetry">
+<span class="material-symbols-outlined text-[14px]">settings</span> Settings
+        </div>
+</div>
+</aside>
+<!-- Kochi Ward Matrix Grid Dimmed -->
+<main class="flex-1 p-4 grid grid-cols-12 grid-rows-8 gap-2 bg-[#0e0e10] opacity-35 filter blur-[1px]">
+<div class="col-span-2 row-span-2 border border-[#39393b] bg-[#131315] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">FORT KOCHI #118</span>
+<span class="font-mono text-data-metric text-[#e8e8e8]">29.8°C</span>
+</div>
+<div class="col-span-3 row-span-2 border border-[#39393b] bg-[#1c1b1e] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">MATTANCHERRY #121</span>
+<span class="font-mono text-data-metric text-[#ffb68e]">31.4°C</span>
+</div>
+<div class="col-span-4 row-span-2 border border-[#39393b] bg-[#131315] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">VILLINGDON ISL #130</span>
+<span class="font-mono text-data-metric text-[#e8e8e8]">30.2°C</span>
+</div>
+<div class="col-span-3 row-span-2 border border-[#39393b] bg-[#201f22] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">THEVARA #134</span>
+<span class="font-mono text-data-metric text-[#f17f35]">33.1°C</span>
+</div>
+<div class="col-span-3 row-span-3 border border-[#39393b] bg-[#131315] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">MARINE DRIVE #139</span>
+<span class="font-mono text-data-metric text-[#e8e8e8]">30.9°C</span>
+</div>
+<!-- Cell #142 in Grid -->
+<div class="col-span-4 row-span-3 border-2 border-[#f17f35] bg-[#1c1b1e] p-2 flex flex-col justify-between relative shadow-[0_0_20px_rgba(241,127,53,0.3)]">
+<div class="flex justify-between items-start">
+<span class="font-mono text-label-code text-[#e8e8e8] font-bold">ERNAKULAM CENTRAL #142</span>
+<span class="bg-[#f17f35] text-[#0e0e10] font-mono text-label-telemetry px-1 font-bold">ANOMALY</span>
+</div>
+<div class="text-right">
+<div class="text-[#a58c7f] font-mono text-label-telemetry">T_SURFACE</div>
+<div class="font-mono text-data-display text-[#f17f35] leading-none font-bold">35.2°C</div>
+</div>
+</div>
+<div class="col-span-5 row-span-3 border border-[#39393b] bg-[#131315] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">PALARIVATTOM #145</span>
+<span class="font-mono text-data-metric text-[#ffb68e]">32.6°C</span>
+</div>
+<div class="col-span-4 row-span-3 border border-[#39393b] bg-[#131315] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">KADAVANTHRA #150</span>
+<span class="font-mono text-data-metric text-[#e8e8e8]">31.8°C</span>
+</div>
+<div class="col-span-4 row-span-3 border border-[#39393b] bg-[#1c1b1e] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">VYTTILA HUB #154</span>
+<span class="font-mono text-data-metric text-[#f17f35]">34.4°C</span>
+</div>
+<div class="col-span-4 row-span-3 border border-[#39393b] bg-[#131315] p-2 flex flex-col justify-between">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">PANAMPILLY NAGAR #158</span>
+<span class="font-mono text-data-metric text-[#e8e8e8]">30.1°C</span>
+</div>
+</main>
+</div>
+<!-- Active Pulsing Target Bracket for Cell #142 -->
+<div class="absolute top-[30%] left-[34%] w-52 h-40 pointer-events-none z-10 hidden sm:block">
+<div class="relative w-full h-full pulsing-bracket border-2 border-[#f17f35]">
+<!-- Corner Reticles -->
+<span class="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#f17f35]"></span>
+<span class="absolute -top-1.5 -right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#f17f35]"></span>
+<span class="absolute -bottom-1.5 -left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#f17f35]"></span>
+<span class="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#f17f35]"></span>
+<div class="absolute -top-6 left-0 bg-[#0e0e10] border border-[#f17f35] px-1.5 py-0.5 text-[#f17f35] font-mono text-label-telemetry uppercase tracking-wider flex items-center gap-1 shadow-sm">
+<span class="w-1.5 h-1.5 bg-[#f17f35] inline-block"></span>
+        TARGET: CELL_142_KOCHI
+      </div>
+<div class="absolute -bottom-5 right-0 font-mono text-label-telemetry text-[#f17f35] font-semibold">
+        LST +6.2°C ANOMALY
+      </div>
+</div>
+</div>
+<!-- Deep dark backdrop overlay -->
+<div class="absolute inset-0 bg-[#0e0e10]/80 z-10 backdrop-blur-[2px]"></div>
+<!-- SLIDE-IN CELL DIAGNOSIS DRAWER (Dark Slate #1c1b1e / #131315 with #39393b border & #f17f35 accents) -->
+<section class="absolute top-0 right-0 h-full w-full max-w-xl md:max-w-lg lg:max-w-[540px] z-20 bg-[#1c1b1e] border-l border-[#39393b] flex flex-col justify-between shadow-2xl overflow-y-auto">
+<!-- Panel Envelope -->
+<div class="flex flex-col h-full divide-y divide-[#39393b]">
+<!-- Header Section -->
+<div class="p-5 bg-[#131315]">
+<div class="flex items-center justify-between pb-3">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#f17f35] shadow-[0_0_8px_#f17f35]"></span>
+<span class="font-mono text-label-code text-[#e8e8e8] uppercase tracking-wider font-semibold">
+              SHADENET · CELL #142 DIAGNOSIS
+            </span>
+</div>
+<!-- Close button -->
+<button aria-label="Close diagnosis drawer" class="p-1 border border-[#39393b] text-[#e8e8e8] hover:border-[#f17f35] hover:text-[#f17f35] transition-colors flex items-center justify-center w-7 h-7 bg-[#1c1b1e]">
+<span class="font-mono text-[13px] leading-none">✕</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-mono text-label-telemetry text-[#a58c7f]">
+            LAT/LON: 9.9674° N, 76.2912° E
+          </span>
+<span class="font-mono text-label-telemetry bg-[#0e0e10] px-2 py-0.5 border border-[#39393b] text-[#f17f35] font-semibold">
+            WARD: ERNAKULAM CENTRAL
+          </span>
+</div>
+<!-- Headline -->
+<h1 class="mt-4 text-headline-xl text-[#e8e8e8] tracking-wider leading-snug uppercase font-normal" style="font-family: &quot;Bebas Neue&quot;, sans-serif;">
+          Why is this block 6.2°C above average?
+        </h1>
+<p class="font-body-compact text-body-compact text-[#a58c7f] mt-1">
+          Feature attribution analysis derived via SHAP Kernel Explainer on calibrated Landsat-9 thermal infrared sensors.
+        </p>
+</div>
+<!-- Metric Summary Cluster -->
+<div class="grid grid-cols-3 gap-0 border-b border-[#39393b] bg-[#131315]"><div class="p-3.5 border-r border-[#39393b] bg-[#131315]">
+<div class="text-[#a58c7f] font-mono text-label-telemetry uppercase tracking-wider">SURFACE TEMP</div>
+<div class="text-headline-xl text-[#f17f35] mt-0.5 tracking-wider font-normal leading-none" style="font-family: 'Bebas Neue', sans-serif;">35.2°C</div>
+<div class="text-[#a58c7f] font-mono text-label-telemetry mt-1">Mean: 29.0°C</div>
+</div>
+<div class="p-3.5 border-r border-[#39393b] bg-[#131315]">
+<div class="text-[#a58c7f] font-mono text-label-telemetry uppercase tracking-wider">DELTA SHIFT</div>
+<div class="text-headline-xl text-[#f17f35] mt-0.5 tracking-wider font-normal leading-none" style="font-family: 'Bebas Neue', sans-serif;">+6.2°C</div>
+<div class="text-[#f17f35] font-mono text-label-telemetry font-bold mt-1">Severity: PEAK</div>
+</div>
+<div class="p-3.5 bg-[#131315]">
+<div class="text-[#a58c7f] font-mono text-label-telemetry uppercase tracking-wider">CANOPY COVER</div>
+<div class="text-headline-xl text-[#e8e8e8] mt-0.5 tracking-wider font-normal leading-none" style="font-family: 'Bebas Neue', sans-serif;">4.2%</div>
+<div class="text-[#a58c7f] font-mono text-label-telemetry mt-1">Target: 25.0%</div>
+</div></div>
+<!-- SHAP Influence Factor Section -->
+<div class="p-5 space-y-3.5 bg-[#1c1b1e]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#f17f35]">analytics</span>
+<span class="text-headline-md uppercase tracking-wider text-[#e8e8e8] font-normal" style="font-family: &quot;Bebas Neue&quot;, sans-serif;">
+              SHAP Influence Factor Decomposition
+            </span>
+</div>
+<span class="font-mono text-label-telemetry text-[#a58c7f]">BASE = 0.0°C</span>
+</div>
+<!-- Axis Legend -->
+<div class="grid grid-cols-2 text-label-telemetry font-mono border-b border-[#39393b] pb-1 text-[#a58c7f]">
+<div class="text-left font-mono">← COOLING INFLUENCE (−ΔT)</div>
+<div class="text-right font-mono">WARMING ATTRIBUTION (+ΔT) →</div>
+</div>
+<!-- Factor 1: Built-up Density +2.3°C -->
+<div class="space-y-1">
+<div class="flex justify-between items-center font-mono text-label-code">
+<span class="text-[#e8e8e8]">1. Built-up Density</span>
+<span class="text-[#f17f35] font-bold">+2.3°C</span>
+</div>
+<div class="relative w-full h-4 bg-[#131315] border border-[#39393b] flex">
+<div class="w-1/2 flex justify-end"></div>
+<div class="w-px h-full bg-[#7a757e] z-10"></div>
+<div class="w-1/2 flex items-center">
+<div class="h-3 bg-[#f17f35] border border-[#f17f35] shadow-[0_0_8px_rgba(241,127,53,0.35)]" style="width: 76.6%;"></div>
+</div>
+</div>
+</div>
+<!-- Factor 2: Road Density +1.1°C -->
+<div class="space-y-1">
+<div class="flex justify-between items-center font-mono text-label-code">
+<span class="text-[#e8e8e8]">2. Road Density</span>
+<span class="text-[#f17f35] font-bold">+1.1°C</span>
+</div>
+<div class="relative w-full h-4 bg-[#131315] border border-[#39393b] flex">
+<div class="w-1/2 flex justify-end"></div>
+<div class="w-px h-full bg-[#7a757e] z-10"></div>
+<div class="w-1/2 flex items-center">
+<div class="h-3 bg-[#f17f35] border border-[#f17f35] shadow-[0_0_8px_rgba(241,127,53,0.35)]" style="width: 36.6%;"></div>
+</div>
+</div>
+</div>
+<!-- Factor 3: Building Density +0.6°C -->
+<div class="space-y-1">
+<div class="flex justify-between items-center font-mono text-label-code">
+<span class="text-[#e8e8e8]">3. Building Density</span>
+<span class="text-[#f17f35] font-bold">+0.6°C</span>
+</div>
+<div class="relative w-full h-4 bg-[#131315] border border-[#39393b] flex">
+<div class="w-1/2 flex justify-end"></div>
+<div class="w-px h-full bg-[#7a757e] z-10"></div>
+<div class="w-1/2 flex items-center">
+<div class="h-3 bg-[#f17f35] border border-[#f17f35] shadow-[0_0_8px_rgba(241,127,53,0.35)]" style="width: 20%;"></div>
+</div>
+</div>
+</div>
+<!-- Factor 4: Vegetation (NDVI) −0.8°C (Off-white outline/tint) -->
+<div class="space-y-1">
+<div class="flex justify-between items-center font-mono text-label-code">
+<span class="text-[#e8e8e8]">4. Vegetation (NDVI)</span>
+<span class="text-[#e8e8e8] font-bold">−0.8°C</span>
+</div>
+<div class="relative w-full h-4 bg-[#131315] border border-[#39393b] flex">
+<div class="w-1/2 flex justify-end items-center">
+<div class="h-3 bg-[#e8e8e8]/20 border border-[#e8e8e8]" style="width: 26.6%;"></div>
+</div>
+<div class="w-px h-full bg-[#7a757e] z-10"></div>
+<div class="w-1/2"></div>
+</div>
+</div>
+<!-- Factor 5: Distance to Green Space −0.2°C (Off-white outline/tint) -->
+<div class="space-y-1">
+<div class="flex justify-between items-center font-mono text-label-code">
+<span class="text-[#e8e8e8]">5. Distance to Green Space</span>
+<span class="text-[#e8e8e8] font-bold">−0.2°C</span>
+</div>
+<div class="relative w-full h-4 bg-[#131315] border border-[#39393b] flex">
+<div class="w-1/2 flex justify-end items-center">
+<div class="h-3 bg-[#e8e8e8]/20 border border-[#e8e8e8]" style="width: 6.6%;"></div>
+</div>
+<div class="w-px h-full bg-[#7a757e] z-10"></div>
+<div class="w-1/2"></div>
+</div>
+</div>
+</div>
+<!-- Cooling Scenario Simulation Section -->
+<div class="p-5 space-y-4 bg-[#131315]">
+<div class="flex items-center justify-between border-b border-[#39393b] pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#f17f35]">thermostat</span>
+<h2 class="text-headline-md leading-none text-[#e8e8e8] tracking-wider uppercase font-normal" style="font-family: &quot;Bebas Neue&quot;, sans-serif;">
+              Cooling Scenario Simulation
+            </h2>
+</div>
+<span class="font-mono text-label-telemetry text-[#a58c7f] bg-[#0e0e10] px-2 py-0.5 border border-[#39393b]">
+            SIM-ENGINE: V4.1
+          </span>
+</div>
+<!-- Projected Temp Comparison Container -->
+<div class="flex items-center justify-between p-3.5 bg-[#0e0e10] border border-[#39393b]"><div>
+<span class="font-mono text-label-telemetry text-[#a58c7f] block uppercase">Current Baseline</span>
+<span class="text-headline-md text-[#a58c7f] line-through tracking-wider font-normal" style="font-family: 'Bebas Neue', sans-serif;">35.2°C</span>
+</div>
+<div class="text-center px-2">
+<span class="material-symbols-outlined text-[#f17f35] text-[22px]">trending_down</span>
+</div>
+<div class="text-right">
+<span class="font-mono text-label-telemetry text-[#a58c7f] block uppercase">Projected Output</span>
+<div class="flex items-baseline gap-2 justify-end">
+<span class="text-headline-xl text-[#f17f35] tracking-wider font-normal leading-none" style="font-family: 'Bebas Neue', sans-serif;">33.7°C</span>
+<span class="bg-[#f17f35] text-[#0e0e10] font-mono text-label-code px-1.5 py-0.5 font-bold shadow-sm">
+                [−1.5°C]
+              </span>
+</div>
+</div></div>
+<!-- Interactive Telemetry Range Slider -->
+<div class="space-y-2">
+<div class="flex justify-between items-center font-mono text-label-code">
+<span class="text-[#e8e8e8]">Add Vegetation Target</span>
+<span class="text-[#f17f35] font-bold bg-[#0e0e10] px-2 py-0.5 border border-[#f17f35]/50 shadow-sm">
+              +18% CANOPY
+            </span>
+</div>
+<div class="relative pt-4 pb-2">
+<!-- Range floating badge -->
+<div class="absolute -top-1 font-mono text-label-telemetry bg-[#f17f35] text-[#0e0e10] px-1 font-bold shadow-sm" style="left: calc(60% - 16px);">
+              18%
+            </div>
+<!-- Slider Rail -->
+<div class="relative w-full h-[4px] bg-[#39393b]">
+<!-- Filled Active Bar -->
+<div class="absolute left-0 top-0 h-full bg-[#f17f35] shadow-[0_0_8px_#f17f35]" style="width: 60%;"></div>
+<!-- Thumb: Sharp Rectangle -->
+<div class="absolute top-1/2 -translate-y-1/2 w-[10px] h-[18px] bg-[#e8e8e8] border border-[#f17f35] cursor-pointer shadow-md" style="left: calc(60% - 5px);"></div>
+</div>
+<!-- Monospace Range Boundaries -->
+<div class="flex justify-between items-center text-label-telemetry font-mono text-[#a58c7f] mt-3">
+<span class="">0% (BASELINE)</span>
+<span class="">10%</span>
+<span class="text-[#f17f35] font-bold">18% (SELECTED)</span>
+<span class="">25%</span>
+<span class="">30% (SATURATION)</span>
+</div>
+</div>
+</div>
+<!-- Expected Impact Metrics -->
+<div class="grid grid-cols-2 gap-2 pt-1 font-mono text-label-code">
+<div class="p-2.5 bg-[#0e0e10] border border-[#39393b] flex items-center justify-between">
+<span class="text-[#a58c7f]">Tree Canopy:</span>
+<span class="text-[#e8e8e8] font-bold">+14ha</span>
+</div>
+<div class="p-2.5 bg-[#0e0e10] border border-[#39393b] flex items-center justify-between">
+<span class="text-[#a58c7f]">Albedo shift:</span>
+<span class="text-[#e8e8e8] font-bold">+0.12</span>
+</div>
+<div class="p-2.5 bg-[#0e0e10] border border-[#39393b] flex items-center justify-between">
+<span class="text-[#a58c7f]">Evapotranspiration:</span>
+<span class="text-[#e8e8e8] font-bold">+8.4 mm/d</span>
+</div>
+<div class="p-2.5 bg-[#0e0e10] border border-[#39393b] flex items-center justify-between">
+<span class="text-[#a58c7f]">Pop. Relieved:</span>
+<span class="text-[#e8e8e8] font-bold">24,300</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="p-4 bg-[#0e0e10] border-t border-[#39393b] flex items-center gap-3 mt-auto">
+<button class="flex-1 py-2.5 px-3 bg-[#f17f35] text-[#0e0e10] font-mono text-label-code font-bold uppercase tracking-wider hover:bg-[#ffb68e] transition-colors flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(241,127,53,0.3)]">
+<span class="material-symbols-outlined text-[16px]">task_alt</span>
+          Commit Mitigation Target
+        </button>
+<button aria-label="Export Telemetry" class="py-2.5 px-3 bg-[#1c1b1e] border border-[#39393b] text-[#e8e8e8] font-mono text-label-code uppercase tracking-wider hover:border-[#f17f35] hover:text-[#f17f35] transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+          Export Cell
+        </button>
+</div>
+</div>
+</section>
+</div>
+</body></html>

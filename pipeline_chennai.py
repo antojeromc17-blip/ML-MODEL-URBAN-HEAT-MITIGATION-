@@ -123,7 +123,14 @@ def extract_buildings(grid, buildings_path):
     ).reset_index()
 
     stats["building_density"] = stats["total_building_area"] / cell_area
-    res = grid[["cell_id"]].merge(stats, on="cell_id", how="left").fillna(0)
+    res = grid[["cell_id", "geometry"]].merge(stats, on="cell_id", how="left")
+
+    minx, miny, maxx, maxy = buildings.total_bounds
+    inside = res.geometry.centroid.x.between(minx, maxx) & res.geometry.centroid.y.between(miny, maxy)
+    for col in ["building_count", "total_building_area", "avg_building_area", "building_density"]:
+        if col in res.columns:
+            res.loc[inside, col] = res.loc[inside, col].fillna(0)
+
     print(f"    Cells with buildings: {(res['building_count'] > 0).sum()}/{len(grid)}")
     return res[["building_count", "building_density", "avg_building_area"]]
 
@@ -150,6 +157,12 @@ def extract_roads(grid, roads_path):
         "road_length_m": road_lengths,
         "road_density": [l / cell_area for l in road_lengths]
     })
+
+    minx, miny, maxx, maxy = roads.total_bounds
+    inside = grid.geometry.centroid.x.between(minx, maxx) & grid.geometry.centroid.y.between(miny, maxy)
+    res.loc[~inside, "road_density"] = np.nan
+    res.loc[~inside, "road_length_m"] = np.nan
+
     print(f"    Cells with roads: {(res['road_density'] > 0).sum()}/{len(grid)}")
     return res
 

@@ -18,6 +18,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Large geospatial raster and raw vector extracts (over GitHub 100MB limit)
+*.tif
+data/*/*_buildings.geojson
+data/*/*_roads.geojson
+data/*/*.tif
+
 # Caches and temporary data
 cache/
 *.tmp

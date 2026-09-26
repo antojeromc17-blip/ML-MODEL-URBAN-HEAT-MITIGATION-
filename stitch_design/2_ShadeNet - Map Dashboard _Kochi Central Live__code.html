@@ -1,0 +1,712 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>shadenet: kochi_central [live]</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Montserrat:wght@400;700;800;900&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "primary-container": "#f17f35",
+          "error-container": "#93000a",
+          "surface-container-low": "#1c1b1e",
+          "on-error-container": "#ffdad6",
+          "surface-tint": "#ffb68e",
+          "inverse-on-surface": "#313032",
+          "inverse-primary": "#9b4500",
+          "secondary": "#b8c3ff",
+          "primary": "#ffb68e",
+          "on-secondary-fixed": "#031550",
+          "secondary-fixed-dim": "#b8c3ff",
+          "on-secondary-fixed-variant": "#35437d",
+          "background": "#131315",
+          "on-tertiary": "#472912",
+          "surface-variant": "#353437",
+          "surface-container-high": "#2a2a2c",
+          "on-secondary": "#1d2c66",
+          "on-tertiary-container": "#4d2e16",
+          "secondary-container": "#384580",
+          "on-surface": "#e5e1e4",
+          "tertiary-fixed-dim": "#eebd9b",
+          "primary-fixed-dim": "#ffb68e",
+          "error": "#ffb4ab",
+          "secondary-fixed": "#dde1ff",
+          "on-surface-variant": "#ddc1b3",
+          "surface": "#131315",
+          "surface-container": "#201f22",
+          "surface-container-lowest": "#0e0e10",
+          "on-tertiary-fixed-variant": "#613f26",
+          "surface-dim": "#131315",
+          "tertiary-container": "#c29576",
+          "surface-container-highest": "#353437",
+          "on-primary-container": "#5b2600",
+          "tertiary": "#eebd9b",
+          "outline-variant": "#564338",
+          "on-primary-fixed-variant": "#763300",
+          "surface-bright": "#39393b",
+          "inverse-surface": "#e5e1e4",
+          "outline": "#a58c7f",
+          "on-error": "#690005",
+          "on-tertiary-fixed": "#2e1502",
+          "on-background": "#e5e1e4",
+          "tertiary-fixed": "#ffdcc5",
+          "on-secondary-container": "#a8b5f8",
+          "on-primary": "#532200",
+          "primary-fixed": "#ffdbc9",
+          "on-primary-fixed": "#331200"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin": "1rem",
+          "space-lg": "1rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "space-md": "0.75rem",
+          "gutter": "0.75rem",
+          "space-xl": "1.5rem"
+        },
+        "fontFamily": {
+          "body-regular": ["Montserrat"],
+          "data-metric": ["JetBrains Mono"],
+          "label-code": ["JetBrains Mono"],
+          "headline-lg-mobile": ["Montserrat"],
+          "headline-lg": ["Montserrat"],
+          "headline-xl-mobile": ["Montserrat"],
+          "headline-xl": ["Montserrat"],
+          "data-display": ["JetBrains Mono"],
+          "label-telemetry": ["JetBrains Mono"],
+          "body-compact": ["Montserrat"],
+          "headline-md": ["Montserrat"]
+        },
+        "fontSize": {
+          "body-regular": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+          "data-metric": ["20px", { "lineHeight": "26px", "fontWeight": "600" }],
+          "label-code": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+          "headline-lg-mobile": ["20px", { "lineHeight": "26px", "fontWeight": "800" }],
+          "headline-lg": ["24px", { "lineHeight": "30px", "fontWeight": "800" }],
+          "headline-xl-mobile": ["26px", { "lineHeight": "32px", "fontWeight": "900" }],
+          "headline-xl": ["36px", { "lineHeight": "44px", "fontWeight": "900" }],
+          "data-display": ["32px", { "lineHeight": "36px", "fontWeight": "700" }],
+          "label-telemetry": ["10px", { "lineHeight": "12px", "fontWeight": "400" }],
+          "body-compact": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+          "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "700" }]
+        }
+      },
+    },
+  }
+</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    @keyframes brutalPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+    .animate-telemetry-pulse {
+      animation: brutalPulse 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    .scanlines {
+      background: linear-gradient(rgba(19, 19, 21, 0) 50%, rgba(14, 14, 16, 0.45) 50%);
+      background-size: 100% 4px;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0e0e10;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #353437;
+    }
+</style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface antialiased overflow-hidden select-none w-screen h-screen flex flex-col font-body-compact">
+<!-- ========================================== -->
+<!-- TOP NAVIGATION BAR (Shared Anchor Component) -->
+<!-- ========================================== -->
+<header class="w-full px-4 h-12 flex items-center justify-between border-b border-outline-variant/60 bg-surface-container-lowest z-30 shrink-0">
+<!-- Brand / Node Status Indicator -->
+<div class="flex items-center gap-6">
+<div class="text-label-code font-label-code uppercase tracking-widest text-on-surface flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container inline-block animate-telemetry-pulse shadow-[0_0_8px_#f17f35]"></span>
+<span class="font-bold text-primary tracking-wider">shadenet: kochi_central [live]</span>
+</div>
+<!-- Center Telemetry Micro-Stat Array -->
+<nav aria-label="Quick Telemetry" class="hidden md:flex items-center gap-5 pl-4 border-l border-outline-variant/50">
+<div class="flex items-center gap-1.5 border-b-2 border-primary-container text-on-surface font-label-code text-label-code py-1">
+<span class="text-outline">[</span>
+<span class="text-outline font-normal">LST:</span>
+<span class="font-bold text-primary">32.1°C</span>
+<span class="text-outline">]</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-code text-label-code py-1 hover:text-on-surface transition-colors duration-75">
+<span class="text-outline">[</span>
+<span class="text-outline font-normal">Hotspots:</span>
+<span class="font-bold text-primary-container">47</span>
+<span class="text-outline">]</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-code text-label-code py-1 hover:text-on-surface transition-colors duration-75">
+<span class="text-outline">[</span>
+<span class="text-outline font-normal">Max ΔT:</span>
+<span class="font-bold text-tertiary">−2.1°C</span>
+<span class="text-outline">]</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-code text-label-code py-1 hover:text-on-surface transition-colors duration-75">
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+<span class="text-outline font-normal">Inference:</span>
+<span class="font-bold text-primary-fixed">Online</span>
+</div>
+</nav>
+</div>
+<!-- Trailing Actions & Diagnostics Control -->
+<div class="flex items-center gap-3">
+<!-- Status Chip -->
+<div class="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 bg-surface-container-high border border-outline-variant/60 text-label-telemetry font-label-telemetry text-primary-fixed uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+<span>LIVE CHOROPLETH</span>
+</div>
+<!-- Auto Tour CTA Action -->
+<button class="flex items-center gap-1.5 px-3 py-1 bg-surface-container border border-outline-variant hover:border-primary-container text-on-surface font-label-code text-label-code uppercase tracking-wider transition-colors duration-75 hover:text-primary" title="Start Autonomous Hotspot Tour">
+<span class="material-symbols-outlined text-[14px] text-primary-container">tune</span>
+<span>Auto Tour</span>
+</button>
+<!-- Export Telemetry Action -->
+<button class="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-surface-container border border-outline-variant hover:border-outline text-on-surface-variant hover:text-on-surface font-label-code text-label-code uppercase tracking-wider transition-colors duration-75">
+<span class="material-symbols-outlined text-[14px]">receipt_long</span>
+<span>Export Telemetry</span>
+</button>
+<!-- Icon Actions Group -->
+<div class="flex items-center border-l border-outline-variant/50 pl-2 ml-1 gap-1">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container" title="Terminal Interface">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container" title="Alerts &amp; Thresholds">
+<span class="material-symbols-outlined text-[16px]">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================== -->
+<!-- MAIN WORKSPACE: SIDEBAR + CHOROPLETH CANVAS -->
+<!-- ========================================== -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- ========================================== -->
+<!-- SIDE NAVIGATION BAR (Shared Anchor Component) -->
+<!-- ========================================== -->
+<aside class="h-[calc(100vh-3rem)] w-64 flex flex-col justify-between p-2.5 border-r border-outline-variant/50 bg-surface-container-low shrink-0 z-20">
+<!-- Upper Section: Branding & Navigation Tabs -->
+<div class="space-y-4">
+<!-- Node Metadata Card -->
+<div class="p-2.5 bg-surface-container-lowest border border-outline-variant/60 space-y-1.5">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-on-surface font-bold tracking-tight uppercase">Kochi UHI Diagnostic</span>
+<span class="text-label-telemetry font-label-telemetry px-1.5 py-0.5 bg-primary-container text-on-primary-fixed font-bold tracking-wider">NODE-07</span>
+</div>
+<div class="text-label-telemetry font-label-telemetry text-outline flex items-center justify-between">
+<span>Zone 07: Coastal Sector</span>
+<span class="text-on-surface-variant">VEMBANAD-ESTUARY</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 mt-1 overflow-hidden">
+<div class="bg-primary-container h-full w-3/4"></div>
+</div>
+</div>
+<!-- Navigation Tabs Matrix -->
+<nav aria-label="Diagnostic Layers" class="space-y-1">
+<!-- Active Tab: Choropleth Grid -->
+<a class="border-l-2 border-primary-container text-primary bg-surface-container pl-3 py-2 flex items-center gap-3 font-label-code text-label-code w-full" href="#">
+<span class="material-symbols-outlined text-[16px] text-primary-container">grid_view</span>
+<span class="flex-1 font-semibold text-on-surface">Choropleth Grid</span>
+<span class="text-label-telemetry font-label-telemetry text-primary-container font-bold">ACTIVE</span>
+</a>
+<!-- Inactive: SHAP Influence -->
+<a class="text-on-surface-variant hover:bg-surface-container hover:text-on-surface pl-3 py-2 flex items-center gap-3 font-label-code text-label-code transition-none w-full" href="#">
+<span class="material-symbols-outlined text-[16px] text-outline">analytics</span>
+<span class="flex-1">SHAP Influence</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">ATTR</span>
+</a>
+<!-- Inactive: Temporal Scrubber -->
+<a class="text-on-surface-variant hover:bg-surface-container hover:text-on-surface pl-3 py-2 flex items-center gap-3 font-label-code text-label-code transition-none w-full" href="#">
+<span class="material-symbols-outlined text-[16px] text-outline">timeline</span>
+<span class="flex-1">Temporal Scrubber</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">24H</span>
+</a>
+<!-- Inactive: Sensor Nodes -->
+<a class="text-on-surface-variant hover:bg-surface-container hover:text-on-surface pl-3 py-2 flex items-center gap-3 font-label-code text-label-code transition-none w-full" href="#">
+<span class="material-symbols-outlined text-[16px] text-outline">sensors</span>
+<span class="flex-1">Sensor Nodes</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">42/42</span>
+</a>
+<!-- Inactive: Telemetry Logs -->
+<a class="text-on-surface-variant hover:bg-surface-container hover:text-on-surface pl-3 py-2 flex items-center gap-3 font-label-code text-label-code transition-none w-full" href="#">
+<span class="material-symbols-outlined text-[16px] text-outline">receipt_long</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">RAW</span>
+</a>
+</nav>
+<!-- Mini Telemetry Diagnostics Well -->
+<div class="border border-outline-variant/60 p-2.5 bg-surface-container-lowest space-y-2">
+<div class="flex justify-between items-center text-label-telemetry font-label-telemetry text-outline uppercase border-b border-outline-variant/40 pb-1.5">
+<span>Critical Anomaly</span>
+<span class="text-primary-container font-bold tracking-wider">WARD #142</span>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-label-code font-label-code">
+<span class="text-outline">Surface Peak:</span>
+<span class="text-primary-container font-bold text-[13px]">39.4°C</span>
+</div>
+<div class="flex justify-between text-label-code font-label-code">
+<span class="text-outline">Delta vs Baseline:</span>
+<span class="text-tertiary-fixed font-bold">+5.3°C</span>
+</div>
+<div class="flex justify-between text-label-code font-label-code">
+<span class="text-outline">Urban Albedo:</span>
+<span class="text-primary-fixed-dim font-bold">0.11 [CRIT]</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Lower Section: Primary Simulation Trigger + System Tools -->
+<div class="space-y-2.5 pt-2 border-t border-outline-variant/50">
+<!-- CTA Action Button -->
+<button class="w-full py-2.5 bg-primary-container hover:bg-primary text-on-primary font-label-code text-label-code font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors duration-75 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span>Simulate Scenario</span>
+</button>
+<div class="space-y-0.5">
+<a class="text-on-surface-variant hover:bg-surface-container hover:text-on-surface pl-3 py-1.5 flex items-center gap-3 font-label-code text-label-code" href="#">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>Diagnostics</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container hover:text-on-surface pl-3 py-1.5 flex items-center gap-3 font-label-code text-label-code" href="#">
+<span class="material-symbols-outlined text-[14px]">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ========================================== -->
+<!-- VIEWPORT: FULL-SCREEN KOCHI MAP & CHOROPLETH -->
+<!-- ========================================== -->
+<main class="flex-1 relative bg-surface-container-lowest overflow-hidden flex flex-col">
+<!-- Top Viewport Context Ribbon -->
+<div class="absolute top-3 left-4 z-10 flex items-center gap-2 pointer-events-none">
+<div class="bg-surface-container-lowest/90 border border-outline-variant/70 px-3 py-1 text-label-code font-label-code text-on-surface backdrop-blur-sm flex items-center gap-3 shadow-md">
+<span class="text-outline">SECTOR:</span>
+<span class="font-bold tracking-wider text-on-surface">KOCHI URBAN AGGLOMERATION</span>
+<span class="text-outline-variant">|</span>
+<span class="text-outline">RESOLUTION:</span>
+<span class="text-primary-container font-mono font-semibold">100m² CELL MESH</span>
+</div>
+</div>
+<!-- Vector Geographic Underlay & Grid Simulation -->
+<div class="w-full h-full relative overflow-hidden bg-[#131315] flex items-center justify-center cursor-crosshair">
+<!-- Synthetic Geographic Landmass & Backwaters of Kochi (SVG Engine) with Thermal Telemetry palette -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-45" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1600 1000">
+<defs>
+<pattern height="20" id="waterStipple" patternUnits="userSpaceOnUse" width="20">
+<circle cx="2" cy="2" fill="#201f22" r="0.6"></circle>
+</pattern>
+<pattern height="40" id="subgrid" patternUnits="userSpaceOnUse" width="40">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c1b1e" stroke-width="0.8"></path>
+</pattern>
+</defs>
+<rect fill="url(#subgrid)" height="1000" width="1600"></rect>
+<path d="M 0,0 L 450,0 Q 480,260 410,480 Q 360,650 390,1000 L 0,1000 Z" fill="#18181b" stroke="#2a2a2c" stroke-width="1.5"></path>
+<path d="M 460,180 Q 560,280 520,440 Q 480,590 560,780 Q 610,910 630,1000 L 520,1000 Q 430,780 440,560 Q 460,340 400,200 Z" fill="#1c1b1e" stroke="#353437" stroke-dasharray="2,2"></path>
+<polygon fill="#201f22" points="560,380 660,390 710,510 670,610 570,590 530,480" stroke="#564338" stroke-width="1"></polygon>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="10" letter-spacing="2" x="590" y="490">WILLINGDON ISL.</text>
+<path d="M 280,290 L 450,300 L 490,460 L 390,620 L 290,540 Z" fill="#1e1e21" stroke="#564338" stroke-width="1"></path>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="10" letter-spacing="2" x="320" y="420">FORT KOCHI</text>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="9" letter-spacing="1" x="340" y="520">MATTANCHERRY</text>
+<path d="M 720,120 L 1400,80 L 1450,960 L 690,920 L 680,680 L 740,490 Z" fill="#1c1b1e" stroke="#564338" stroke-width="1.2"></path>
+<text fill="#eebd9b" font-family="JetBrains Mono" font-size="11" font-weight="bold" letter-spacing="3" x="880" y="340">ERNAKULAM CENTRAL</text>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="9" letter-spacing="2" x="740" y="270">MARINE DRIVE WATERFRONT</text>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="10" letter-spacing="2" x="960" y="650">MG ROAD ARTERIAL</text>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="10" letter-spacing="2" x="1150" y="480">VYTTILA MOBILITY HUB</text>
+<text fill="#a58c7f" font-family="JetBrains Mono" font-size="9" letter-spacing="2" x="1100" y="220">EDAPPALLY COMMERCIAL CORRIDOR</text>
+<line stroke="#a58c7f" stroke-width="1" x1="440" x2="480" y1="310" y2="330"></line>
+<line stroke="#a58c7f" stroke-width="1" x1="480" x2="520" y1="330" y2="330"></line>
+<text fill="#c29576" font-family="JetBrains Mono" font-size="8" x="530" y="333">COCHIN PORT BASIN</text>
+<circle cx="910" cy="510" fill="none" r="140" stroke="#353437" stroke-dasharray="4,4" stroke-width="0.7"></circle>
+<circle cx="910" cy="510" fill="none" r="280" stroke="#2a2a2c" stroke-dasharray="8,8" stroke-width="0.7"></circle>
+</svg>
+<!-- ========================================================= -->
+<!-- UNIFORM CHOROPLETH GRID (~400 Square Cells Across Viewport) -->
+<!-- Thermal Telemetry Palette: Dark Slate -> Warm Amber -> Vivid Orange (#f17f35) -->
+<!-- ========================================================= -->
+<div class="relative z-10 w-[95%] h-[88%] grid gap-[2px] p-2 border border-outline-variant/60 bg-surface-container-lowest/40 pointer-events-auto" style="grid-template-columns: repeat(24, minmax(0, 1fr)); grid-template-rows: repeat(16, minmax(0, 1fr));">
+<!-- Row 1 -->
+<div class="bg-[#18181b] border border-[#252427] hover:border-outline"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#4a3528] border border-[#613f26]"></div>
+<div class="bg-[#6b3819] border border-[#a58c7f]"></div>
+<div class="bg-[#9c4b18] border border-[#ffb68e]"></div>
+<div class="bg-[#d96e27] border border-primary flex items-center justify-center text-[7px] font-mono text-[#131315] font-bold">#012</div>
+<div class="bg-[#8b4217] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 2 -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#563622] border border-[#a58c7f]"></div>
+<div class="bg-[#b3571d] border border-[#ffb68e]"></div>
+<div class="bg-[#d96e27] border border-primary flex items-center justify-center text-[7px] font-mono text-[#131315] font-bold">#034</div>
+<div class="bg-[#f17f35] border border-primary animate-pulse shadow-[0_0_6px_#f17f35]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#783c18] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 3 & 4 -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#6b3819] border border-[#a58c7f]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#f17f35] border border-primary animate-telemetry-pulse relative shadow-[0_0_8px_#f17f35]">
+<span class="absolute -top-1 -right-1 text-[8px] font-mono text-primary-fixed font-black">+</span>
+</div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#9c4b18] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 5: Ernakulam North Junction (#089) -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#8b4217] border border-[#a58c7f]"></div>
+<div class="bg-[#e0752d] border-2 border-primary-fixed relative group cursor-pointer flex items-center justify-center shadow-[0_0_8px_#f17f35]">
+<span class="text-[7px] font-mono text-[#331200] font-extrabold">#089</span>
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:flex px-1.5 py-0.5 bg-surface-container-lowest border border-primary text-on-surface font-label-code text-[9px] whitespace-nowrap z-50 shadow-lg">
+            CELL #089: 38.8°C
+          </div>
+</div>
+<div class="bg-[#f17f35] border border-primary animate-telemetry-pulse shadow-[0_0_6px_#f17f35]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#b3571d] border border-[#a58c7f]"></div>
+<div class="bg-[#563622] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 6 to 8: Commercial Core (#142) -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#b3571d] border border-[#a58c7f]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#f17f35] border border-primary animate-telemetry-pulse shadow-[0_0_10px_#f17f35]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#ffb68e] border-2 border-primary-container relative group cursor-pointer flex items-center justify-center shadow-[0_0_14px_#f17f35]">
+<span class="text-[7px] font-mono text-[#331200] font-extrabold">#142</span>
+<div class="absolute inset-0 border border-primary animate-ping pointer-events-none opacity-40"></div>
+<div class="absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:flex px-2 py-0.5 bg-surface-container-lowest border border-primary-container text-primary font-label-code text-[10px] whitespace-nowrap z-50 shadow-xl font-bold">
+            #142: 39.4°C [CRIT PEAK]
+          </div>
+</div>
+<div class="bg-[#f17f35] border border-primary shadow-[0_0_6px_#f17f35]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#8b4217] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 9 -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#6b3819] border border-[#a58c7f]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#f17f35] border border-primary shadow-[0_0_6px_#f17f35]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#b3571d] border border-[#a58c7f]"></div>
+<div class="bg-[#8b4217] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 10: Vyttila Cluster (#201) -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#9c4b18] border border-[#a58c7f]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#f17f35] border border-primary animate-telemetry-pulse shadow-[0_0_8px_#f17f35]"></div>
+<div class="bg-[#d96e27] border border-primary flex items-center justify-center text-[7px] font-mono text-[#131315] font-bold">#201</div>
+<div class="bg-[#f17f35] border border-primary shadow-[0_0_6px_#f17f35]"></div>
+<div class="bg-[#8b4217] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Row 11 -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#8b4217] border border-[#a58c7f]"></div>
+<div class="bg-[#d96e27] border border-primary"></div>
+<div class="bg-[#9c4b18] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<!-- Rows 12 to 16 Peripheral & Water -->
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#563622] border border-[#a58c7f]"></div>
+<div class="bg-[#353437] border border-[#564338]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#2a2a2c] border border-[#39393b]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#201f22] border border-[#2e2d31]"></div>
+<div class="bg-[#1c1b1e] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+<div class="bg-[#18181b] border border-[#252427]"></div>
+</div>
+<!-- Overlaid Targeting Crosshairs on Active Grid Points -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+<div class="w-12 h-12 border border-outline-variant/40 relative">
+<span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-2.5 h-[1.5px] bg-primary-container"></span>
+<span class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-2.5 h-[1.5px] bg-primary-container"></span>
+<span class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 h-2.5 w-[1.5px] bg-primary-container"></span>
+<span class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 h-2.5 w-[1.5px] bg-primary-container"></span>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- BOTTOM-LEFT HUD: THERMAL GRADIENT LEGEND -->
+<!-- ========================================== -->
+<section aria-label="Thermal Scale" class="absolute bottom-4 left-4 z-20 bg-surface-container-lowest/95 border border-outline-variant/70 p-3 space-y-2 pointer-events-auto shadow-lg backdrop-blur-sm">
+<div class="flex items-center justify-between border-b border-outline-variant/50 pb-1 gap-4">
+<span class="text-label-telemetry font-label-telemetry text-outline uppercase font-bold tracking-wider">LST INTENSITY</span>
+<span class="text-label-telemetry font-label-telemetry text-primary-container font-mono">°C (MODIS calibrated)</span>
+</div>
+<div class="flex items-start gap-3">
+<!-- Strictly mapped vertical gradient bar: deep slate -> warm amber -> vivid thermal orange (#f17f35) -->
+<div class="w-3.5 h-36 border border-outline-variant/60 relative flex flex-col justify-between overflow-hidden" style="background: linear-gradient(to top, #18181b 0%, #2a2a2c 25%, #6b3819 50%, #d96e27 75%, #f17f35 100%);">
+<div class="w-full h-[1px] bg-surface-bright/50"></div>
+<div class="w-full h-[1px] bg-surface-bright/50"></div>
+<div class="w-full h-[1px] bg-surface-bright/50"></div>
+<div class="w-full h-[1px] bg-surface-bright/50"></div>
+</div>
+<!-- Tick Labels (Monospace) -->
+<div class="h-36 flex flex-col justify-between text-label-code font-label-code text-on-surface-variant py-0.5">
+<div class="flex items-center gap-1.5">
+<span class="text-primary font-bold">38°C+</span>
+<span class="text-label-telemetry font-label-telemetry px-1 bg-primary-container text-on-primary-fixed font-black">CRIT</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface">34°C</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">ELEV</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-outline">30°C</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">MOD</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-outline">26°C</span>
+<span class="text-label-telemetry font-label-telemetry text-outline">BASE</span>
+</div>
+</div>
+</div>
+<div class="pt-1.5 border-t border-outline-variant/40 text-label-telemetry font-label-telemetry text-outline flex justify-between gap-3">
+<span>ALBEDO THRESH: 0.18</span>
+<span class="text-primary font-mono font-semibold">ΔT MAX: +5.3°C</span>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- BOTTOM-RIGHT HUD: COORDINATES & LAYER CONTROLS -->
+<!-- ========================================== -->
+<section aria-label="Geographic Coordinates and Map Controls" class="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2 pointer-events-auto">
+<!-- Zoom & View State Micro-Panel -->
+<div class="flex items-center bg-surface-container-lowest/95 border border-outline-variant/70 p-1 gap-1 shadow-lg backdrop-blur-sm">
+<button class="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/50 font-label-code hover:text-primary transition-colors duration-75" title="Zoom In">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/50 font-label-code hover:text-primary transition-colors duration-75" title="Zoom Out">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/50 font-label-code hover:text-primary transition-colors duration-75" title="Reset Recenter">
+<span class="material-symbols-outlined text-[16px]">crop_free</span>
+</button>
+<div class="w-[1px] h-6 bg-outline-variant/60 mx-1"></div>
+<button class="px-2.5 h-8 flex items-center gap-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/50 font-label-code text-label-code uppercase tracking-wider hover:text-primary transition-colors duration-75" title="Toggle Surface Layers">
+<span class="material-symbols-outlined text-[14px] text-primary-container">layers</span>
+<span>Layers</span>
+</button>
+</div>
+<!-- Coordinates & Precision Telemetry Ribbon -->
+<div class="bg-surface-container-lowest/95 border border-outline-variant/70 px-3 py-1.5 flex items-center gap-4 text-label-code font-label-code shadow-lg backdrop-blur-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary-container">location_on</span>
+<span class="text-on-surface font-semibold">09°58′N 76°17′E</span>
+</div>
+<div class="text-outline-variant">·</div>
+<div class="text-on-surface-variant">
+          ELEV <span class="text-on-surface font-mono font-medium">2m</span> MSL
+        </div>
+<div class="text-outline-variant">·</div>
+<div class="text-on-surface-variant flex items-center gap-1">
+<span>GRID:</span>
+<span class="text-primary-container font-mono font-semibold">WGS-84 UTM-43N</span>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Realtime Minimal Scan Effect Layer -->
+<div class="pointer-events-none fixed inset-0 z-50 scanlines opacity-20"></div>
+</body></html>

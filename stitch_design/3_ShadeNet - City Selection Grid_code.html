@@ -1,0 +1,209 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SHADENET // Planetary Thermal Observational System</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&amp;family=Bricolage+Grotesque:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"text-dim": "rgba(232, 232, 232, 0.55)", "secondary-fixed": "#d5e8c7", "on-primary-fixed": "#052100", "primary-fixed-dim": "#a7d390", "surface-container-low": "#1a1c18", "on-secondary-fixed": "#111f0b", "surface-container-highest": "#333630", "surface-bright": "#383a35", outline: "#8d9386", "on-tertiary-container": "#7b5667", "on-error": "#690005", "surface-container": "#1e201c", "inverse-primary": "#426831", "surface-tint": "#a7d390", "secondary-fixed-dim": "#baccac", "surface-dim": "#121410", "surface-panel": "#161616", "on-tertiary-fixed-variant": "#5f3d4d", "tertiary-fixed": "#ffd8e8", "primary-fixed": "#c2efaa", "accent-heat": "#E4262E", "on-secondary-container": "#acbe9f", error: "#ffb4ab", secondary: "#baccac", "inverse-surface": "#e2e3db", "on-secondary": "#25341e", "tertiary-fixed-dim": "#e8bace", "on-secondary-fixed-variant": "#3b4b33", "on-primary-fixed-variant": "#2b4f1b", primary: "#ebffdc", "outline-variant": "#43493e", tertiary: "#fff6f8", "error-container": "#93000a", "on-surface-variant": "#c3c9ba", "on-primary-container": "#446a33", "surface-base": "#0A0A0A", "inverse-on-surface": "#2f312c", "on-surface": "#e2e3db", "text-primary": "#E8E8E8", "surface-container-high": "#282b26", surface: "#121410", "on-tertiary": "#462737", "on-primary": "#143806", "secondary-container": "#3e4e35", background: "#121410", "surface-variant": "#333630", "on-error-container": "#ffdad6", "border-subtle": "rgba(255, 255, 255, 0.08)", "on-background": "#e2e3db", "on-tertiary-fixed": "#2e1221", "surface-container-lowest": "#0c0f0b", "primary-container": "#bce9a4", "tertiary-container": "#ffcfe4"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"space-xl": "2.5rem", margin: "1.5rem", "space-xs": "0.25rem", "margin-lg": "2.5rem", "gutter-lg": "1.5rem", gutter: "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem"}, fontFamily: {"mono-data": ["JetBrains Mono"], "headline-xl": ["Montserrat"], "headline-md": ["Montserrat"], "headline-xl-mobile": ["Montserrat"], "body-lg": ["Montserrat"], "mono-hero-mobile": ["JetBrains Mono"], "mono-hero": ["JetBrains Mono"], "mono-telemetry": ["JetBrains Mono"], "body-sm": ["Montserrat"], "headline-lg": ["Montserrat"], headline: ["Montserrat"], display: ["Montserrat"], body: ["Montserrat"], label: ["Bricolage Grotesque"]}, fontSize: {"mono-data": ["15px", {lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "600"}], "headline-xl": ["56px", {lineHeight: "64px", letterSpacing: "-0.04em", fontWeight: "900"}], "headline-md": ["22px", {lineHeight: "30px", letterSpacing: "-0.01em", fontWeight: "700"}], "headline-xl-mobile": ["36px", {lineHeight: "44px", letterSpacing: "-0.03em", fontWeight: "900"}], "body-lg": ["16px", {lineHeight: "26px", fontWeight: "400"}], "mono-hero-mobile": ["44px", {lineHeight: "52px", letterSpacing: "-0.03em", fontWeight: "700"}], "mono-hero": ["72px", {lineHeight: "80px", letterSpacing: "-0.05em", fontWeight: "700"}], "mono-telemetry": ["11px", {lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "500"}], "body-sm": ["13px", {lineHeight: "20px", fontWeight: "400"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800"}]}}}};</script>
+<style>
+    .thermal-glow-card {
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .thermal-glow-card:hover {
+      box-shadow: 0 0 0 1px #E4262E, 0 0 28px rgba(228, 38, 46, 0.25);
+    }
+    .reticle-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="bg-surface-base text-text-primary min-h-screen flex flex-col justify-between selection:bg-primary-container selection:text-text-primary antialiased">
+<!-- TopNavBar (Shared Component) -->
+<header class="w-full px-margin-lg flex items-center justify-between h-14 z-50 sticky top-0 bg-surface-panel dark:bg-surface-panel border-b border-border-subtle dark:border-border-subtle">
+<!-- Brand Logo Anchor -->
+<div class="flex items-center gap-6">
+<a class="font-mono-data text-mono-data text-text-primary dark:text-text-primary lowercase tracking-tight flex items-center gap-2 font-bold" href="#">
+<span class="text-primary-container text-xs">●</span> shadenet
+      </a>
+<span class="hidden lg:inline-block font-mono-telemetry text-mono-telemetry text-text-dim border-l border-border-subtle pl-4 tracking-widest uppercase font-semibold">
+        SYS_STATUS: NOMINAL // ORBITAL_RECEPTOR_04
+      </span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6"><a class="text-text-dim dark:text-text-dim font-mono-telemetry font-semibold pb-1 hover:text-text-primary dark:hover:text-text-primary transition-colors" href="#">Observatory</a>
+<a class="text-text-primary dark:text-text-primary border-b border-primary-container font-mono-telemetry font-semibold pb-1" href="#">Cities</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry font-semibold pb-1 hover:text-text-primary dark:hover:text-text-primary transition-colors" href="#">Telemetry</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry font-semibold pb-1 hover:text-text-primary dark:hover:text-text-primary transition-colors" href="#">Diagnostics</a></nav>
+<!-- Trailing Actions & Shell Icons -->
+<div class="flex items-center gap-3"><div class="flex items-center gap-1 mr-2 border-r border-border-subtle pr-3">
+<button aria-label="Terminal console" class="p-1 text-text-dim hover:text-text-primary transition-colors" title="terminal">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</button>
+<button aria-label="Satellite feed" class="p-1 text-text-dim hover:text-text-primary transition-colors" title="satellite_alt">
+<span class="material-symbols-outlined text-[18px]">satellite_alt</span>
+</button>
+<button aria-label="System settings" class="p-1 text-text-dim hover:text-text-primary transition-colors" title="settings">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+</button>
+</div>
+<a class="hidden sm:inline-block font-mono-telemetry text-mono-telemetry font-semibold text-text-dim hover:text-text-primary px-2.5 py-1 border border-border-subtle hover:border-primary-container transition-colors" href="#">
+        Docs
+      </a>
+<button class="bg-primary-container text-text-primary font-mono-telemetry text-mono-telemetry px-3 py-1 font-semibold rounded-none hover:shadow-[0_0_16px_rgba(228,38,46,0.5)] active:brightness-125 transition-all">
+        Deploy Sensor
+      </button></div>
+</header>
+<!-- Main Observational Grid Canvas -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-margin-lg py-8 md:py-12 flex flex-col justify-center">
+<!-- Section Title Unit -->
+<div class="text-center mb-8 md:mb-12">
+<div class="inline-flex items-center gap-2 px-2.5 py-0.5 mb-3 border border-border-subtle bg-surface-panel">
+<span class="h-1.5 w-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-mono-telemetry text-mono-telemetry text-text-dim tracking-widest uppercase">REGIONAL TARGET SELECTION MATRIX</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg md:font-headline-xl md:text-headline-xl text-text-primary tracking-tight">
+        Select a city to analyze
+      </h1>
+<p class="font-mono-telemetry text-mono-telemetry text-text-dim mt-2 tracking-widest uppercase">
+        THERMAL RADIANCE SPECTRA RANGE: 8.0µm – 14.0µm // RECEPTOR PASS: 10:42 UTC
+      </p>
+</div>
+<!-- 2x2 City Cards Grid -->
+<div class="mb-6"><a class="group relative block bg-surface-panel rounded-none border border-primary-container/80 hover:border-primary-container shadow-[0_0_24px_rgba(228,38,46,0.35)] hover:shadow-[0_0_36px_rgba(228,38,46,0.6)] overflow-hidden h-72 md:h-80 flex flex-col justify-between p-5 md:p-6 cursor-pointer transition-all duration-300" href="#"><div class="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 brightness-40 group-hover:scale-105 transition-transform duration-700 ease-out" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCZpMaM1nBCXTGdv5p7KUL-PkRO_XZa5L32bxUntFFtKSDDylf9hcjTQbSI555m0d3QO1bcfcxYpNaq9dvQA3cnBwDA_hw2xuB6QvTkFgAJfqevQiU1BzlMhA2O0445vjhRYwZj1ca6y57CRoDyPEKueTz5Awp_2hO5rFclKPvG6Yoq6-zJsvtPPXrao-g12IRaP85iJ0iAaSTe9wpRAyeDqoeRhafGZ3wtX7AjVKZ66GqCbB30Z4bMMA&quot;);"></div><div class="absolute inset-0 reticle-grid pointer-events-none opacity-40"></div><div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/40 to-transparent"></div><div class="relative z-10 flex flex-wrap items-start justify-between gap-3"><div class="flex flex-wrap items-center gap-2"><div class="font-mono-telemetry text-mono-telemetry text-text-dim bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm"><span class="">LOC: 09°58′N 76°17′E</span><span class="block text-primary-container font-bold">TEMP: +32.8°C PEAK (ACTIVE RADAR)</span></div><div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary-container/20 border border-primary-container backdrop-blur-sm"><span class="h-1.5 w-1.5 rounded-full bg-primary-container animate-ping"></span><span class="font-mono-telemetry text-mono-telemetry text-primary-container font-bold tracking-widest uppercase">SPECIAL FOCUS REGION // SOUTH-WEST COASTAL</span></div></div><div class="flex items-center gap-1.5 font-mono-telemetry text-mono-telemetry text-primary-container bg-surface-base/80 px-2 py-1 border border-primary-container backdrop-blur-sm"><span class="inline-block w-1.5 h-1.5 bg-primary-container animate-pulse"></span><span class="font-bold">UHI INDEX: 0.81 [MONITORED]</span></div></div><div class="relative z-10 flex items-end justify-between border-t border-primary-container/30 pt-4 group-hover:border-primary-container transition-colors"><div><span class="block font-mono-telemetry text-mono-telemetry text-text-dim tracking-widest uppercase">SECTOR // SOUTH-WEST COASTAL ESTUARY</span><h2 class="font-mono-hero-mobile md:font-mono-hero text-mono-hero-mobile md:text-mono-hero leading-none text-text-primary tracking-tighter flex items-center gap-3">KOCHI <span class="text-text-dim font-headline-lg text-lg hidden sm:inline-block font-normal">കൊച്ചി</span> <span class="text-xs font-mono-telemetry tracking-widest text-primary-container border border-primary-container px-2 py-0.5 uppercase hidden sm:inline-block">ACTIVE COASTAL BIO-ZONE</span></h2></div><div class="font-mono-telemetry text-mono-telemetry text-right text-text-dim"><span class="block text-text-primary font-bold">14 SENSORS</span><span class="text-primary-container font-bold text-base">DELTA: +2.4°C</span></div></div></a></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-gutter-lg">
+<!-- Card 1: KOCHI -->
+<a class="group relative block bg-surface-panel rounded-none border border-border-subtle thermal-glow-card overflow-hidden h-72 md:h-84 flex flex-col justify-between p-5 md:p-6 cursor-pointer" href="#"><div class="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 brightness-40 group-hover:scale-105 transition-transform duration-700 ease-out" data-location="Delhi" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDZdkKyVbe7LbOhrxv3I4kZKjmgvJL3qjcUoSF-XBr2KC7-TDYqxvfHxQ-EuNy59jTTxJzYi2q6smv6Btm915KYQKDYQcepcUw8xsP4MVKoOKWi7hOssH3moq2k2BcN9Ssp0hwVb3gXU1r5cNX-eZNvdH1wsE2MjFLse8JJpfA3D29mfOe3LW7TGUasykhjyWjorMRS8SbN0zdqDfuy4XfIMQ3MwjYgQ_S8hh9x8a8C3AceTgKn5M95Rw&quot;);"></div><div class="absolute inset-0 reticle-grid pointer-events-none opacity-40"></div><div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/40 to-transparent"></div><div class="relative z-10 flex items-start justify-between"><div class="font-mono-telemetry text-mono-telemetry text-text-dim bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm"><span class="">LOC: 28°36′N 77°12′E</span><span class="block text-primary-container">TEMP: +44.2°C PEAK</span></div><div class="flex items-center gap-1.5 font-mono-telemetry text-mono-telemetry text-text-primary bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm"><span class="inline-block w-1.5 h-1.5 bg-primary-container animate-ping"></span><span class="">UHI INDEX: 0.99</span></div></div><div class="relative z-10 flex items-end justify-between border-t border-border-subtle pt-4 group-hover:border-primary-container/40 transition-colors"><div><span class="block font-mono-telemetry text-mono-telemetry text-text-dim tracking-widest uppercase">SECTOR // NORTHERN GANGETIC METROPLEX</span><h2 class="font-mono-hero-mobile md:font-mono-hero text-mono-hero-mobile md:text-mono-hero leading-none text-text-primary tracking-tighter flex items-center gap-2">DELHI <span class="text-text-dim font-headline-lg text-lg hidden sm:inline-block font-normal">दिल्ली</span></h2></div><div class="font-mono-telemetry text-mono-telemetry text-right text-text-dim"><span class="block text-text-primary font-bold">64 SENSORS</span><span class="text-primary-container">DELTA: +6.4°C</span></div></div></a>
+<!-- Card 2: BANGALORE -->
+<a class="group relative block bg-surface-panel rounded-none border border-border-subtle thermal-glow-card overflow-hidden h-72 md:h-84 flex flex-col justify-between p-5 md:p-6 cursor-pointer" href="#">
+<!-- Background Satellite Texture -->
+<div class="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 brightness-40 group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="Top-down orbital synthetic aperture radar imagery showcasing the sprawling, ultra-dense inland urban grid cluster of Bangalore with technological hubs, concrete matrices, and highway ribbons highlighted in stark high-contrast slate black, titanium gray, and concentrated infrared micro-points." data-location="Bangalore" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAETV6yhJ5JC5OFGS5-KAHF49ANdxtdTUJUB8BNUM1rmvVAX6sc_T45tFLiq8-XDQKmkgxK2bIc53Ke4imBPIu0kLCRRFVn5iL89BVBGKkKVbT0QU2o3YDXQ03MPz2zWgsDCvnB27HZA8aK8wr0_ppXWE2eRIf3xGAZ35xYcGgvPndRCXePr8SjIkIUhzvqDKSHyG0Pgil7rJp5Wmnf6cOu7pBGnUv6gSGSgdNkDTpxmZbN4cect0Ma-g')">
+</div>
+<!-- Reticle Grid Layer -->
+<div class="absolute inset-0 reticle-grid pointer-events-none opacity-40"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/40 to-transparent"></div>
+<!-- Top Telemetry Header -->
+<div class="relative z-10 flex items-start justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm">
+<span class="">LOC: 12°58′N 77°35′E</span>
+<span class="block text-primary-container">TEMP: +34.2°C PEAK</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono-telemetry text-mono-telemetry text-text-primary bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm">
+<span class="inline-block w-1.5 h-1.5 bg-primary-container"></span>
+<span class="">UHI INDEX: 0.94</span>
+</div>
+</div>
+<!-- Bottom Overlay Identifier -->
+<div class="relative z-10 flex items-end justify-between border-t border-border-subtle pt-4 group-hover:border-primary-container/40 transition-colors">
+<div>
+<span class="block font-mono-telemetry text-mono-telemetry text-text-dim tracking-widest uppercase">SECTOR // DECCAN PLATEAU INLAND</span>
+<h2 class="font-mono-hero-mobile md:font-mono-hero text-mono-hero-mobile md:text-mono-hero leading-none text-text-primary tracking-tighter">
+              BANGALORE
+            </h2>
+</div>
+<div class="font-mono-telemetry text-mono-telemetry text-right text-text-dim">
+<span class="block text-text-primary font-bold">38 SENSORS</span>
+<span class="text-primary-container">DELTA: +4.1°C</span>
+</div>
+</div>
+</a>
+<!-- Card 3: MUMBAI -->
+<a class="group relative block bg-surface-panel rounded-none border border-border-subtle thermal-glow-card overflow-hidden h-72 md:h-84 flex flex-col justify-between p-5 md:p-6 cursor-pointer" href="#">
+<!-- Background Satellite Texture -->
+<div class="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 brightness-40 group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="Orthographic radar telemetry view capturing Mumbai's extreme narrow coastal peninsula surrounded by the Arabian Sea, featuring high-density urban structural blocks rendered in stark desaturated monochrome with bright thermal radiation outlines radiating along transport corridors." data-location="Mumbai" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDZdkKyVbe7LbOhrxv3I4kZKjmgvJL3qjcUoSF-XBr2KC7-TDYqxvfHxQ-EuNy59jTTxJzYi2q6smv6Btm915KYQKDYQcepcUw8xsP4MVKoOKWi7hOssH3moq2k2BcN9Ssp0hwVb3gXU1r5cNX-eZNvdH1wsE2MjFLse8JJpfA3D29mfOe3LW7TGUasykhjyWjorMRS8SbN0zdqDfuy4XfIMQ3MwjYgQ_S8hh9x8a8C3AceTgKn5M95Rw')">
+</div>
+<!-- Reticle Grid Layer -->
+<div class="absolute inset-0 reticle-grid pointer-events-none opacity-40"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/40 to-transparent"></div>
+<!-- Top Telemetry Header -->
+<div class="relative z-10 flex items-start justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm">
+<span class="">LOC: 19°04′N 72°52′E</span>
+<span class="block text-primary-container">TEMP: +36.9°C PEAK</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono-telemetry text-mono-telemetry text-text-primary bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm">
+<span class="inline-block w-1.5 h-1.5 bg-primary-container animate-ping"></span>
+<span class="">UHI INDEX: 0.98</span>
+</div>
+</div>
+<!-- Bottom Overlay Identifier -->
+<div class="relative z-10 flex items-end justify-between border-t border-border-subtle pt-4 group-hover:border-primary-container/40 transition-colors">
+<div>
+<span class="block font-mono-telemetry text-mono-telemetry text-text-dim tracking-widest uppercase">SECTOR // WEST PENINSULAR ESTUARY</span>
+<h2 class="font-mono-hero-mobile md:font-mono-hero text-mono-hero-mobile md:text-mono-hero leading-none text-text-primary tracking-tighter">
+              MUMBAI
+            </h2>
+</div>
+<div class="font-mono-telemetry text-mono-telemetry text-right text-text-dim">
+<span class="block text-text-primary font-bold">52 SENSORS</span>
+<span class="text-primary-container">DELTA: +5.2°C</span>
+</div>
+</div>
+</a>
+<!-- Card 4: CHENNAI -->
+<a class="group relative block bg-surface-panel rounded-none border border-border-subtle thermal-glow-card overflow-hidden h-72 md:h-84 flex flex-col justify-between p-5 md:p-6 cursor-pointer" href="#">
+<!-- Background Satellite Texture -->
+<div class="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 brightness-40 group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="Satellite thermal scan visual of the eastern coastal geometry of Chennai fronting the Bay of Bengal, depicting rectilinear urban street networks, maritime port docks, and heat absorption channels in deep obsidian slate with calibrated red micro-thermal points." data-location="Chennai" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDJhSvdB_2bGAvYuGRtRz-5GxYS2ng16rTZIJig-N5s5zeBh1wY0VgfS4EPtsySLWUzBi3WaiI0bQwuVg0UnGGHi58hrx5iy9xVwZpXm5iesMVYz3gWUZUzR1MHNPi-VWGNHMbt4y2h5fIbWvYTmKlsyI1j5Cu8SP26UP2qFkFnDLBM2Wsl-bImfmwY07y8FNq1wE9VZ6xHqTTP175hbYZ2pJICtV2u0ySso053eLYtyIwRDSxTJBS8pw')">
+</div>
+<!-- Reticle Grid Layer -->
+<div class="absolute inset-0 reticle-grid pointer-events-none opacity-40"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/40 to-transparent"></div>
+<!-- Top Telemetry Header -->
+<div class="relative z-10 flex items-start justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm">
+<span class="">LOC: 13°04′N 80°16′E</span>
+<span class="block text-primary-container">TEMP: +35.1°C PEAK</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono-telemetry text-mono-telemetry text-text-primary bg-surface-base/80 px-2 py-1 border border-border-subtle backdrop-blur-sm">
+<span class="inline-block w-1.5 h-1.5 bg-primary-container"></span>
+<span class="">UHI INDEX: 0.89</span>
+</div>
+</div>
+<!-- Bottom Overlay Identifier -->
+<div class="relative z-10 flex items-end justify-between border-t border-border-subtle pt-4 group-hover:border-primary-container/40 transition-colors">
+<div>
+<span class="block font-mono-telemetry text-mono-telemetry text-text-dim tracking-widest uppercase">SECTOR // COROMANDEL EAST LITTORAL</span>
+<h2 class="font-mono-hero-mobile md:font-mono-hero text-mono-hero-mobile md:text-mono-hero leading-none text-text-primary tracking-tighter">
+              CHENNAI
+            </h2>
+</div>
+<div class="font-mono-telemetry text-mono-telemetry text-right text-text-dim">
+<span class="block text-text-primary font-bold">29 SENSORS</span>
+<span class="text-primary-container">DELTA: +3.6°C</span>
+</div>
+</div>
+</a>
+</div>
+<!-- Diagnostic Sub-HUD Indicator Strip -->
+<div class="mt-8 border border-border-subtle bg-surface-panel p-3 flex flex-wrap items-center justify-between gap-4 font-mono-telemetry text-mono-telemetry"><div class="flex items-center gap-6 text-text-dim"><span class=""><strong class="text-text-primary">CLUSTER NODES:</strong> 197 ONLINE</span><span class="hidden sm:inline"><strong class="text-text-primary">SAMPLING FREQUENCY:</strong> 120 SEC</span><span class="hidden md:inline"><strong class="text-text-primary">CALIBRATION PROTOCOL:</strong> ISO-14064-GEO</span></div><div class="flex items-center gap-3"><span class="text-text-dim">THERMAL GRADIENT:</span><div class="w-32 h-2.5 bg-gradient-to-r from-surface-panel via-[#701518] to-primary-container border border-border-subtle"></div><span class="text-primary-container font-bold">+6.4°C MAX</span></div></div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full px-margin-lg py-gutter-lg flex flex-col md:flex-row justify-between items-center z-10 border-t border-border-subtle dark:border-border-subtle bg-surface-base dark:bg-surface-base gap-4">
+<!-- Copyright & Platform Identity -->
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim dark:text-text-dim text-center md:text-left">
+      SHADENET INSTRUMENTATION PLATFORM // PLANETARY THERMAL OBSERVATIONAL SYSTEM
+    </div>
+<!-- Terminal Links -->
+<div class="flex flex-wrap items-center justify-center gap-4 md:gap-6 font-mono-telemetry text-mono-telemetry">
+<a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Delhi Terminal</a><a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Kochi Terminal</a>
+<a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Bangalore Terminal</a>
+<a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Mumbai Terminal</a>
+<a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Chennai Terminal</a>
+<a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">API Spec</a>
+<a class="text-text-dim dark:text-text-dim hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Sensor Network</a>
+</div>
+</footer>
+
+
+
+
+</body></html>

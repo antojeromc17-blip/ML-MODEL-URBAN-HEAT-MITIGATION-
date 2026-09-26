@@ -1,309 +1,754 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kochi Urban Heat Island (UHI) AI Observatory</title>
-  <meta name="description" content="AI-driven Urban Heat Island detection, SHAP explainability, and counterfactual greening scenario simulator for Kochi, Kerala.">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>ShadeNet // Planetary Thermal Observational System</title>
   
-  <!-- Google Fonts: Inter & Outfit -->
+  <!-- Fonts: Montserrat, JetBrains Mono, Bebas Neue, Orbitron -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-base": "#0A0A0A",
+            "surface-panel": "#161616",
+            "surface-elevated": "#1c1b1e",
+            "border-subtle": "rgba(255, 255, 255, 0.08)",
+            "border-line": "#39393b",
+            "primary-container": "#E4262E",
+            "accent-heat": "#E4262E",
+            "primary-amber": "#f17f35",
+            "text-primary": "#E8E8E8",
+            "text-dim": "rgba(232, 232, 232, 0.55)",
+          },
+          fontFamily: {
+            "headline": ["Montserrat", "sans-serif"],
+            "display": ["Bebas Neue", "Montserrat", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"],
+            "orbitron": ["Orbitron", "JetBrains Mono", "monospace"],
+          }
+        }
+      }
+    };
+  </script>
   
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="app-layout">
-    <!-- Top Navigation Header -->
-    <header class="top-nav">
-      <div class="brand">
-        <div class="brand-icon">
-          <i class="fa-solid fa-temperature-arrow-up"></i>
-        </div>
-        <div class="brand-text">
-          <h1 id="appTitle">Urban Heat Island AI Observatory</h1>
-          <span class="badge live-badge"><span class="pulse-dot"></span> Multi-City Satellite AI Engine</span>
-        </div>
-      </div>
-      
-      <!-- City Switcher -->
-      <div class="city-selector-box" style="display: flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 12px; border-radius: 8px;">
-        <i class="fa-solid fa-location-dot" style="color: #38bdf8; font-size: 0.9rem;"></i>
-        <select id="citySelect" style="background: transparent; color: #f8fafc; border: none; font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer; padding-right: 4px;">
-          <option value="kochi" style="background: #1e293b; color: #f8fafc;" selected>Kochi</option>
-          <option value="chennai" style="background: #1e293b; color: #f8fafc;">Chennai</option>
-          <option value="bangalore" style="background: #1e293b; color: #f8fafc;">Bangalore</option>
-          <option value="delhi" style="background: #1e293b; color: #f8fafc;">Delhi</option>
-          <option value="mumbai" style="background: #1e293b; color: #f8fafc;">Mumbai</option>
-        </select>
-      </div>
-      
-      <!-- Key Statistics Strip -->
-      <div class="stats-strip" id="statsStrip">
-        <div class="stat-pill" title="Average Land Surface Temperature across Kochi">
-          <span class="stat-label">Avg LST</span>
-          <span class="stat-val" id="statAvgLst">34.2°C</span>
-        </div>
-        <div class="stat-pill danger" title="Critical thermal hotspots flagged (z-score > 1.5)">
-          <span class="stat-label">Hotspots</span>
-          <span class="stat-val" id="statHotspots">37 cells</span>
-        </div>
-        <div class="stat-pill warning" title="Highest observed surface temperature">
-          <span class="stat-label">Peak Temp</span>
-          <span class="stat-val" id="statMaxLst">43.1°C</span>
-        </div>
-        <div class="stat-pill success" title="Maximum counterfactual cooling potential from +30% vegetation">
-          <span class="stat-label">Max Cooling</span>
-          <span class="stat-val" id="statCooling">4.68°C</span>
-        </div>
-      </div>
+<body class="bg-surface-base text-text-primary min-h-screen overflow-x-hidden select-none font-headline antialiased">
 
-      <!-- Action Buttons -->
-      <div class="header-actions">
-        <button class="btn btn-glass" id="btnOpenModelInfo">
-          <i class="fa-solid fa-brain"></i> Model & SHAP
-        </button>
-        <button class="btn btn-primary" id="btnResetView">
-          <i class="fa-solid fa-location-crosshairs"></i> Reset View
-        </button>
-      </div>
-    </header>
+  <!-- ========================================================================= -->
+  <!-- 1. GLOBAL APP HEADER (Persistent) -->
+  <!-- ========================================================================= -->
+  <header class="h-14 border-b border-border-subtle bg-surface-panel/95 backdrop-blur-md flex items-center justify-between px-6 fixed top-0 left-0 right-0 z-50">
+    <div class="flex items-center gap-6">
+      <a href="#landing" id="navLogo" class="flex items-center gap-2 text-text-primary hover:text-primary-container transition-colors group">
+        <span class="w-2.5 h-2.5 rounded-full bg-primary-container inline-block live-ping shadow-[0_0_8px_#E4262E]"></span>
+        <span class="font-mono font-bold tracking-tight text-sm text-text-primary group-hover:text-primary-container">● shadenet</span>
+      </a>
+      <span class="hidden lg:inline-block px-2 py-0.5 border border-border-subtle text-text-dim font-mono text-[10px] uppercase font-semibold">
+        SYS.VER 4.2.0-STABLE
+      </span>
 
-    <!-- Main Workspace: Map + Floating Panels -->
-    <div class="main-workspace">
-      <!-- Leaflet Map Canvas -->
-      <div id="map" class="map-container"></div>
+      <!-- Navigation links (visible on landing & cities views) -->
+      <nav id="headerNavLinks" class="hidden md:flex items-center gap-6 font-mono text-xs">
+        <button onclick="app.showView('landing')" class="text-text-primary border-b border-primary-container pb-0.5 font-semibold">Observatory</button>
+        <button onclick="app.showView('cities')" class="text-text-dim hover:text-text-primary pb-0.5 transition-colors font-semibold">Cities</button>
+        <button onclick="app.openTelemetryJson()" class="text-text-dim hover:text-text-primary pb-0.5 transition-colors font-semibold">Telemetry</button>
+        <button id="btnNavModel" class="text-text-dim hover:text-text-primary pb-0.5 transition-colors font-semibold">Model & SHAP</button>
+      </nav>
 
-      <!-- Left Floating Control Panel -->
-      <aside class="floating-panel map-controls-panel">
-        <div class="panel-section">
-          <div class="section-title">
-            <i class="fa-solid fa-layer-group"></i> Visualization Layer
-          </div>
-          <div class="view-mode-buttons">
-            <button class="mode-btn active" data-mode="lst">
-              <i class="fa-solid fa-fire"></i> LST Temp
-            </button>
-            <button class="mode-btn" data-mode="scenario">
-              <i class="fa-solid fa-leaf"></i> Scenario
-            </button>
-            <button class="mode-btn" data-mode="delta">
-              <i class="fa-solid fa-snowflake"></i> Cooling Delta
-            </button>
-            <button class="mode-btn" data-mode="ndvi">
-              <i class="fa-solid fa-tree"></i> NDVI Green
-            </button>
-            <button class="mode-btn" data-mode="ndbi">
-              <i class="fa-solid fa-city"></i> NDBI Built
-            </button>
-          </div>
+      <!-- Telemetry Pill in Header (shown when on Map view) -->
+      <nav id="headerTelemetry" class="hidden md:flex items-center gap-4 pl-4 border-l border-border-subtle font-mono text-xs">
+        <div class="flex items-center gap-1.5 text-text-primary">
+          <span class="text-text-dim">[</span>
+          <span class="text-text-dim">CITY:</span>
+          <span class="font-bold text-primary-container uppercase" id="hdrCityName">KOCHI</span>
+          <span class="text-text-dim">]</span>
         </div>
-
-        <!-- Counterfactual Scenario Simulator Slider -->
-        <div class="panel-section scenario-slider-section">
-          <div class="slider-header">
-            <span class="section-title">
-              <i class="fa-solid fa-sliders"></i> Greening Simulator
-            </span>
-            <span class="scenario-badge" id="sliderValueBadge">+0% Baseline</span>
-          </div>
-          <input type="range" min="0" max="30" step="10" value="0" id="scenarioSlider" class="custom-slider">
-          <div class="slider-ticks">
-            <span class="tick active" data-val="0">Baseline</span>
-            <span class="tick" data-val="10">+10%</span>
-            <span class="tick" data-val="20">+20%</span>
-            <span class="tick" data-val="30">+30%</span>
-          </div>
-          <div class="scenario-impact-box" id="scenarioImpactBox">
-            <div class="impact-row">
-              <span>Hotspot Avg Cooling:</span>
-              <strong id="hotspotAvgCooling">0.00°C</strong>
-            </div>
-            <div class="impact-row">
-              <span>City-wide Max Cooling:</span>
-              <strong id="cityMaxCooling">0.00°C</strong>
-            </div>
-          </div>
+        <div class="flex items-center gap-1.5 text-text-primary">
+          <span class="text-text-dim">[</span>
+          <span class="text-text-dim">AVG LST:</span>
+          <span class="font-bold text-text-primary" id="hdrAvgLst">34.2°C</span>
+          <span class="text-text-dim">]</span>
         </div>
-
-        <!-- Hotspot Quick Navigator -->
-        <div class="panel-section">
-          <div class="section-title">
-            <i class="fa-solid fa-crosshairs"></i> Hotspot Clusters (11)
-          </div>
-          <select id="hotspotSelect" class="custom-select">
-            <option value="">-- Jump to Hotspot Zone --</option>
-            <option value="Zone 1">Zone 1 (Central Commercial - 21 cells)</option>
-            <option value="Zone 4">Zone 4 (North Industrial - 3 cells)</option>
-            <option value="Zone 10">Zone 10 (Port & Transit - 4 cells)</option>
-            <option value="Zone 2">Zone 2 (East Corridor - 2 cells)</option>
-            <option value="hottest">Peak Heat Cell (#412, 43.1°C)</option>
-          </select>
+        <div class="flex items-center gap-1.5 text-text-primary">
+          <span class="text-text-dim">[</span>
+          <span class="text-text-dim">HOTSPOTS:</span>
+          <span class="font-bold text-primary-container" id="hdrHotspotCount">37</span>
+          <span class="text-text-dim">]</span>
         </div>
-
-        <!-- Dynamic Map Legend -->
-        <div class="panel-section legend-section">
-          <div class="section-title" id="legendTitle">Surface Temperature (°C)</div>
-          <div class="color-ramp" id="legendRamp"></div>
-          <div class="ramp-labels">
-            <span id="legendMin">20°C</span>
-            <span id="legendMid">34°C</span>
-            <span id="legendMax">43°C</span>
-          </div>
+        <div class="flex items-center gap-1.5 text-text-primary">
+          <span class="text-text-dim">[</span>
+          <span class="text-text-dim">MAX COOLING:</span>
+          <span class="font-bold text-primary-container" id="hdrMaxCooling">−4.68°C</span>
+          <span class="text-text-dim">]</span>
         </div>
-      </aside>
-
-      <!-- Right Floating Cell Detail Drawer -->
-      <aside class="floating-panel cell-drawer" id="cellDrawer">
-        <div class="drawer-header">
-          <div class="cell-title-wrap">
-            <span class="drawer-cell-tag" id="drawerCellTag">Cell #---</span>
-            <span class="zone-badge" id="drawerZoneBadge">Neutral</span>
-          </div>
-          <button class="btn-icon" id="btnCloseDrawer" title="Close details">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <div class="drawer-body">
-          <!-- Main Temp Display -->
-          <div class="temp-hero">
-            <div class="temp-val-wrap">
-              <span class="temp-big" id="cellTemp">--.-</span>
-              <span class="temp-unit">°C</span>
-            </div>
-            <div class="temp-meta">
-              <span class="temp-sub">Observed LST</span>
-              <span class="temp-zscore" id="cellZScore">Z-score: +0.00</span>
-            </div>
-          </div>
-
-          <!-- Counterfactual Scenario Cooling Cards -->
-          <div class="drawer-section">
-            <div class="section-title">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> Counterfactual Greening
-            </div>
-            <div class="scenario-grid">
-              <div class="scenario-card" id="cardScenario10">
-                <span class="scen-pct">+10% Green</span>
-                <span class="scen-val" id="scenVal10">--.-°C</span>
-                <span class="scen-desc">cooling</span>
-              </div>
-              <div class="scenario-card" id="cardScenario20">
-                <span class="scen-pct">+20% Green</span>
-                <span class="scen-val" id="scenVal20">--.-°C</span>
-                <span class="scen-desc">cooling</span>
-              </div>
-              <div class="scenario-card" id="cardScenario30">
-                <span class="scen-pct">+30% Green</span>
-                <span class="scen-val" id="scenVal30">--.-°C</span>
-                <span class="scen-desc">cooling</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- SHAP Explainer Chart -->
-          <div class="drawer-section">
-            <div class="section-title">
-              <i class="fa-solid fa-chart-column"></i> Local SHAP Feature Attribution
-            </div>
-            <p class="chart-caption">Positive values increase heat; negative values cool.</p>
-            <div class="chart-container">
-              <canvas id="shapChart"></canvas>
-            </div>
-          </div>
-
-          <!-- Urban Morphology Metrics Table -->
-          <div class="drawer-section">
-            <div class="section-title">
-              <i class="fa-solid fa-city"></i> Cell Urban Indicators
-            </div>
-            <div class="metrics-grid">
-              <div class="metric-item">
-                <span class="m-label">NDBI (Built-up)</span>
-                <span class="m-val" id="cellNdbi">-.--</span>
-              </div>
-              <div class="metric-item">
-                <span class="m-label">NDVI (Vegetation)</span>
-                <span class="m-val" id="cellNdvi">-.--</span>
-              </div>
-              <div class="metric-item">
-                <span class="m-label">Building Density</span>
-                <span class="m-val" id="cellBldgDensity">-.--%</span>
-              </div>
-              <div class="metric-item">
-                <span class="m-label">Road Density</span>
-                <span class="m-val" id="cellRoadDensity">-.--</span>
-              </div>
-              <div class="metric-item">
-                <span class="m-label">Dist to Green Space</span>
-                <span class="m-val" id="cellDistGreen">-- m</span>
-              </div>
-              <div class="metric-item">
-                <span class="m-label">Hotspot Cluster</span>
-                <span class="m-val" id="cellCluster">None</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
+      </nav>
     </div>
 
-    <!-- Model & SHAP Explainer Modal -->
-    <div class="modal-overlay" id="modelModal">
-      <div class="modal-card">
-        <div class="modal-header">
-          <div class="modal-title">
-            <i class="fa-solid fa-microchip"></i> Physics-Informed ML & SHAP Architecture
+    <!-- Header Actions Cluster -->
+    <div class="flex items-center gap-3">
+      <button id="btnHeaderCities" class="px-3 py-1.5 bg-surface-base border border-border-subtle hover:border-primary-container text-text-dim hover:text-text-primary font-mono text-xs uppercase transition-colors flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[15px]">location_city</span>
+        <span>Cities</span>
+      </button>
+      <button id="btnHeaderAutoTour" class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 bg-surface-base border border-border-subtle hover:border-primary-container text-text-primary font-mono text-xs uppercase transition-colors">
+        <span class="material-symbols-outlined text-[15px] text-primary-container">tune</span>
+        <span>Auto Tour</span>
+      </button>
+      <button id="btnHeaderModel" class="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-container text-white font-mono text-xs uppercase font-semibold hover:brightness-110 transition-all btn-thermal-glow">
+        <span class="material-symbols-outlined text-[15px]">memory</span>
+        <span>Model & SHAP</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. SCREEN 1: GLOBAL LANDING / HERO -->
+  <!-- ========================================================================= -->
+  <section id="view-landing" class="view-panel pt-14 min-h-screen flex flex-col justify-between relative overflow-hidden">
+    <!-- Grid overlay & radial heat aura -->
+    <div class="absolute inset-0 grid-lines pointer-events-none opacity-40"></div>
+    <div class="scanline-sweep absolute left-0 right-0 h-28 bg-gradient-to-b from-transparent via-primary-container/10 to-transparent pointer-events-none"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] thermal-glow-bg pointer-events-none -z-10 rounded-full"></div>
+
+    <!-- Corner Telemetry Markers -->
+    <div class="absolute top-20 left-8 hidden md:flex flex-col font-mono text-xs text-text-dim space-y-1 pointer-events-none">
+      <div>LOC: 09°58′01.2″N 76°16′58.8″E</div>
+      <div>REF: RADIANCE_LST_LANDSAT_9_TIRS</div>
+      <div>RES: 30M_PIXEL_RES</div>
+    </div>
+    <div class="absolute top-20 right-8 hidden md:flex flex-col text-right font-mono text-xs text-text-dim space-y-1 pointer-events-none">
+      <div>MOD_STATE: ACTIVE_INFERENCE</div>
+      <div>SURFACE_HEAT_ANOMALY: +8.94°C PEAK</div>
+      <div>HEURISTIC: EXPLAINABLE_SHAP_PHYSICS</div>
+    </div>
+
+    <!-- Center Stage -->
+    <div class="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center px-4 my-auto">
+      <div class="mb-6 inline-flex items-center gap-2.5 px-3 py-1 bg-surface-panel border border-border-subtle font-mono text-xs tracking-widest text-text-dim uppercase">
+        <span class="inline-block w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+        <span>GLOBAL SURFACE TEMPERATURE MONITOR // 24-HR CYCLE</span>
+      </div>
+
+      <h1 class="font-headline font-black text-6xl md:text-8xl lg:text-9xl text-text-primary tracking-tighter uppercase mb-4 select-none">
+        ShadeNet
+      </h1>
+      
+      <p class="font-headline text-base md:text-lg text-text-primary max-w-2xl text-center mb-6 px-4 font-normal leading-relaxed">
+        An AI&amp;ML model that detects urban heat islands, explains their causes, and simulates cooling interventions — city by city.
+      </p>
+
+      <div class="font-mono text-xs text-text-dim mb-8 tracking-widest flex items-center justify-center gap-3">
+        <span>satellite data</span>
+        <span class="text-primary-container font-bold">·</span>
+        <span>explainable ML</span>
+        <span class="text-primary-container font-bold">·</span>
+        <span>scenario simulation</span>
+      </div>
+
+      <button id="btnLandingGetStarted" class="bg-primary-container text-white font-mono text-sm px-9 py-4 tracking-wider uppercase font-bold flex items-center gap-3 border border-primary-container btn-thermal-glow hover:brightness-110 active:scale-95 transition-all">
+        <span>Get Started</span>
+        <span class="font-mono text-base">→</span>
+      </button>
+
+      <span class="font-mono text-xs text-text-dim mt-4 tracking-wider">
+        PRESS [GET STARTED] OR DISCOVER CITY ARCHIVES
+      </span>
+
+      <!-- Scientific HUD Micro-matrix -->
+      <div class="mt-14 w-full max-w-3xl grid grid-cols-2 md:grid-cols-4 gap-2.5 text-left">
+        <div class="bg-surface-panel border border-border-subtle p-3.5 flex flex-col justify-between">
+          <div class="font-mono text-[10px] text-text-dim uppercase">MAPPED METROS</div>
+          <div class="font-mono text-base text-text-primary mt-1 font-bold">5 CITIES</div>
+          <div class="font-mono text-[10px] text-text-dim mt-2">SURFACE VECTORS 100%</div>
+        </div>
+        <div class="bg-surface-panel border border-border-subtle p-3.5 flex flex-col justify-between">
+          <div class="font-mono text-[10px] text-text-dim uppercase">MAX THERMAL DELTA</div>
+          <div class="font-mono text-base text-primary-container mt-1 font-bold">+8.94°C LST</div>
+          <div class="font-mono text-[10px] text-text-dim mt-2">PEAK HOTSPOT SPREAD</div>
+        </div>
+        <div class="bg-surface-panel border border-border-subtle p-3.5 flex flex-col justify-between">
+          <div class="font-mono text-[10px] text-text-dim uppercase">PHYSICS CONSTRAINTS</div>
+          <div class="font-mono text-base text-text-primary mt-1 font-bold">0.00% VIOLATIONS</div>
+          <div class="font-mono text-text-dim text-[10px] mt-2">MONOTONICALLY BOUND</div>
+        </div>
+        <div class="bg-surface-panel border border-border-subtle p-3.5 flex flex-col justify-between">
+          <div class="font-mono text-[10px] text-text-dim uppercase">INFERENCE LATENCY</div>
+          <div class="font-mono text-base text-text-primary mt-1 font-bold">PRECOMPUTED</div>
+          <div class="font-mono text-text-dim text-[10px] mt-2">GEOJSON CACHED</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Landing Footer -->
+    <footer class="w-full px-8 py-4 flex flex-col md:flex-row justify-between items-center z-10 border-t border-border-subtle bg-surface-base/80 text-xs font-mono text-text-dim">
+      <div>SYS_READY // CALIBRATED TO WGS84 DATUM</div>
+      <div class="flex gap-6 mt-2 md:mt-0">
+        <span class="hover:text-primary-container cursor-pointer transition-colors" onclick="app.chooseCityAndOpenHero('kochi')">Kochi Terminal</span>
+        <span class="hover:text-primary-container cursor-pointer transition-colors" onclick="app.chooseCityAndOpenHero('chennai')">Chennai Terminal</span>
+        <span class="hover:text-primary-container cursor-pointer transition-colors" onclick="app.chooseCityAndOpenHero('mumbai')">Mumbai Terminal</span>
+        <span class="hover:text-primary-container cursor-pointer transition-colors" onclick="app.chooseCityAndOpenHero('bangalore')">Bangalore Terminal</span>
+        <span class="hover:text-primary-container cursor-pointer transition-colors" onclick="app.chooseCityAndOpenHero('delhi')">Delhi Terminal</span>
+      </div>
+      <div class="flex items-center gap-2 mt-2 md:mt-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+        <span>NODE_ONLINE: 5_METROS_LIVE_ARRAY</span>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 3. SCREEN 2: CITY SELECTION GRID -->
+  <!-- ========================================================================= -->
+  <section id="view-cities" class="view-panel pt-20 min-h-screen flex flex-col justify-between px-6 max-w-7xl mx-auto hidden">
+    <div>
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 border border-border-subtle bg-surface-panel">
+          <span class="h-1.5 w-1.5 rounded-full bg-primary-container animate-pulse"></span>
+          <span class="font-mono text-[10px] text-text-dim tracking-widest uppercase">REGIONAL TARGET SELECTION MATRIX</span>
+        </div>
+        <h2 class="font-headline font-black text-4xl md:text-5xl text-text-primary tracking-tight">
+          Select a city to analyze
+        </h2>
+        <p class="font-mono text-xs text-text-dim mt-1.5 tracking-wider uppercase">
+          THERMAL RADIANCE SPECTRA RANGE: 8.5µM - 14.0µM // LANDSAT-9 TIRS
+        </p>
+      </div>
+
+      <!-- Featured City Card: KOCHI -->
+      <div class="mb-4">
+        <div class="group relative block bg-surface-panel border-2 border-primary-container shadow-[0_0_24px_rgba(228,38,46,0.35)] hover:shadow-[0_0_36px_rgba(228,38,46,0.6)] p-6 cursor-pointer transition-all duration-300 overflow-hidden" onclick="app.chooseCityAndOpenHero('kochi')">
+          <div class="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 brightness-40 group-hover:scale-105 transition-transform duration-700 ease-out" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZpMaM1nBCXTGdv5p7KUL-PkRO_XZa5L32bxUntFFtKSDDylf9hcjTQbSI555m0d3QO1bcfcxYpNaq9dvQA3cnBwDA_hw2xuB6QvTkFgAJfqevQiU1BzlMhA2O0445vjhRYwZj1ca6y57CRoDyPEKueTz5Awp_2hO5rFclKPvG6Yoq6-zJsvtPPXrao-g12IRaP85iJ0iAaSTe9wpRAyeDqoeRhafGZ3wtX7AjVKZ66GqCbB30Z4bMMA');"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/60 to-transparent"></div>
+          
+          <div class="relative z-10 flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-center gap-2 font-mono text-xs">
+              <span class="bg-surface-base/90 px-2 py-1 border border-border-subtle text-text-dim">LOC: 09°58′N 76°17′E</span>
+              <span class="bg-primary-container text-white px-2 py-1 font-bold">SPECIAL FOCUS // PRIMARY 1,980-CELL LIVE MODEL</span>
+            </div>
+            <div class="font-mono text-xs text-primary-container bg-surface-base/90 px-2 py-1 border border-primary-container font-bold">
+              PEAK LST: 43.1°C
+            </div>
           </div>
-          <button class="btn-icon" id="btnCloseModal">
-            <i class="fa-solid fa-xmark"></i>
+
+          <div class="relative z-10 flex items-end justify-between border-t border-primary-container/30 pt-4 mt-20">
+            <div>
+              <span class="block font-mono text-[10px] text-text-dim tracking-widest uppercase">SECTOR // SOUTH-WEST COASTAL ESTUARY</span>
+              <h3 class="font-headline font-black text-4xl text-text-primary tracking-tight flex items-baseline gap-3 mt-0.5">
+                KOCHI <span class="font-normal text-2xl text-text-dim">കൊച്ചി</span>
+                <span class="text-xs font-mono text-primary-container border border-primary-container px-2 py-0.5 ml-2 font-bold">COMPLETE SHAP EXPLAINED</span>
+              </h3>
+            </div>
+            <div class="font-mono text-right text-xs">
+              <span class="block text-text-primary font-bold">1,980 CELLS</span>
+              <span class="text-primary-container font-bold text-sm">MAX ΔT: −4.68°C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2x2 Other Cities Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
+        <!-- CHENNAI -->
+        <div class="group relative block bg-surface-panel border border-border-subtle hover:border-primary-container p-5 cursor-pointer transition-all duration-200 overflow-hidden" onclick="app.chooseCityAndOpenHero('chennai')">
+          <div class="relative z-10 flex items-start justify-between font-mono text-xs">
+            <span class="text-text-dim">LOC: 13°04′N 80°16′E</span>
+            <span class="text-primary-container font-bold">1,485 CELLS</span>
+          </div>
+          <div class="relative z-10 border-t border-border-subtle pt-3 mt-12">
+            <span class="block font-mono text-[10px] text-text-dim tracking-widest uppercase">SECTOR // COROMANDEL EAST LITTORAL</span>
+            <div class="flex items-baseline justify-between">
+              <h4 class="font-headline font-black text-3xl text-text-primary">CHENNAI <span class="font-normal text-xl text-text-dim ml-1">சென்னை</span></h4>
+              <span class="font-mono text-xs text-primary-container font-bold">AVG LST: 39.7°C</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MUMBAI -->
+        <div class="group relative block bg-surface-panel border border-border-subtle hover:border-primary-container p-5 cursor-pointer transition-all duration-200 overflow-hidden" onclick="app.chooseCityAndOpenHero('mumbai')">
+          <div class="relative z-10 flex items-start justify-between font-mono text-xs">
+            <span class="text-text-dim">LOC: 19°04′N 72°52′E</span>
+            <span class="text-primary-container font-bold">1,400 CELLS</span>
+          </div>
+          <div class="relative z-10 border-t border-border-subtle pt-3 mt-12">
+            <span class="block font-mono text-[10px] text-text-dim tracking-widest uppercase">SECTOR // WEST PENINSULAR ESTUARY</span>
+            <div class="flex items-baseline justify-between">
+              <h4 class="font-headline font-black text-3xl text-text-primary">MUMBAI <span class="font-normal text-xl text-text-dim ml-1">मुंबई</span></h4>
+              <span class="font-mono text-xs text-primary-container font-bold">AVG LST: 36.9°C</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BANGALORE -->
+        <div class="group relative block bg-surface-panel border border-border-subtle hover:border-primary-container p-5 cursor-pointer transition-all duration-200 overflow-hidden" onclick="app.chooseCityAndOpenHero('bangalore')">
+          <div class="relative z-10 flex items-start justify-between font-mono text-xs">
+            <span class="text-text-dim">LOC: 12°58′N 77°35′E</span>
+            <span class="text-primary-container font-bold">1,440 CELLS</span>
+          </div>
+          <div class="relative z-10 border-t border-border-subtle pt-3 mt-12">
+            <span class="block font-mono text-[10px] text-text-dim tracking-widest uppercase">SECTOR // DECCAN PLATEAU INLAND</span>
+            <div class="flex items-baseline justify-between">
+              <h4 class="font-headline font-black text-3xl text-text-primary">BANGALORE <span class="font-normal text-xl text-text-dim ml-1">ಬೆಂಗಳೂರು</span></h4>
+              <span class="font-mono text-xs text-primary-container font-bold">AVG LST: 34.2°C</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DELHI -->
+        <div class="group relative block bg-surface-panel border border-border-subtle hover:border-primary-container p-5 cursor-pointer transition-all duration-200 overflow-hidden" onclick="app.chooseCityAndOpenHero('delhi')">
+          <div class="relative z-10 flex items-start justify-between font-mono text-xs">
+            <span class="text-text-dim">LOC: 28°36′N 77°12′E</span>
+            <span class="text-primary-container font-bold">1,720 CELLS</span>
+          </div>
+          <div class="relative z-10 border-t border-border-subtle pt-3 mt-12">
+            <span class="block font-mono text-[10px] text-text-dim tracking-widest uppercase">SECTOR // NORTHERN GANGETIC METROPLEX</span>
+            <div class="flex items-baseline justify-between">
+              <h4 class="font-headline font-black text-3xl text-text-primary">DELHI <span class="font-normal text-xl text-text-dim ml-1">दिल्ली</span></h4>
+              <span class="font-mono text-xs text-primary-container font-bold">AVG LST: 41.5°C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- City Selection Bottom Bar -->
+    <div class="w-full py-4 border-t border-border-subtle flex flex-col sm:flex-row justify-between items-center font-mono text-xs text-text-dim">
+      <div>CLUSTER NODES: 5 METROS ONLINE &nbsp;|&nbsp; SAMPLING FREQUENCY: PRECOMPUTED</div>
+      <div class="flex items-center gap-3 mt-2 sm:mt-0">
+        <span>THERMAL GRADIENT:</span>
+        <div class="w-24 h-2 rounded-sm border border-border-subtle" style="background: linear-gradient(to right, #161616, #8b181e, #E4262E);"></div>
+        <span class="text-primary-container font-bold">+8.9°C MAX</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 4. SCREEN 3: CITY HERO (ANIMATED DRILL-DOWN) -->
+  <!-- ========================================================================= -->
+  <section id="view-city-hero" class="view-panel pt-20 min-h-screen flex flex-col justify-between relative overflow-hidden hidden">
+    <!-- Grid overlay & breathing glow -->
+    <div class="absolute inset-0 grid-lines pointer-events-none opacity-40"></div>
+    <div class="scanline-sweep absolute left-0 right-0 h-28 bg-gradient-to-b from-transparent via-primary-container/10 to-transparent pointer-events-none"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] thermal-glow-bg pointer-events-none -z-10 rounded-full"></div>
+
+    <div class="w-full max-w-5xl mx-auto px-6 flex justify-between items-center z-10">
+      <button id="btnBackToCities" class="font-mono text-xs text-text-dim hover:text-text-primary flex items-center gap-2 uppercase transition-colors">
+        <span>←</span> <span>Back to cities</span>
+      </button>
+      <span class="font-mono text-xs text-primary-container uppercase font-bold" id="heroSectorTag">
+        SECTOR // KOCHI COASTAL ESTUARY
+      </span>
+    </div>
+
+    <!-- Center Stage Hero Stack -->
+    <div class="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center px-4 my-auto">
+      <div class="inline-flex items-center gap-2.5 px-3 py-1 bg-surface-panel border border-border-subtle mb-4">
+        <span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+        <span class="font-mono text-xs text-text-primary tracking-widest uppercase">URBAN HEAT ISLAND INTENSITY // MAXIMUM INTRA-URBAN GRADIENT</span>
+      </div>
+      
+      <!-- Center-Stage Reticle Box with Animated Hero Number -->
+      <div class="hero-reticle-box group/hero relative my-2 px-10 py-3 select-none inline-block">
+        <!-- Active Corner Registration Marks -->
+        <div class="reticle-corner absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-primary-container"></div>
+        <div class="reticle-corner absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-primary-container"></div>
+        <div class="reticle-corner absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-primary-container"></div>
+        <div class="reticle-corner absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-primary-container"></div>
+        
+        <div class="hero-metric-glow font-orbitron font-black text-primary-container text-7xl sm:text-9xl md:text-[10.5rem] leading-none py-1 select-none" id="heroDeltaStat">
+          8.9°C
+        </div>
+      </div>
+
+      <p class="font-headline text-lg md:text-xl text-text-primary max-w-xl mx-auto mt-4 mb-2 font-medium" id="heroStatCaption">
+        difference between the hottest and coolest block in Kochi.
+      </p>
+
+      <div class="flex items-center justify-center gap-2 font-mono text-xs text-text-dim tracking-wider uppercase mb-8" id="heroModelSubline">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+        <span>model v2 · 1,980 grid cells · live inference: off (precomputed)</span>
+      </div>
+
+      <!-- Action Buttons Cluster -->
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <button id="btnHeroExploreMap" class="bg-primary-container text-white font-mono text-sm px-10 py-3.5 tracking-wider uppercase font-bold border border-primary-container btn-thermal-glow hover:brightness-110 active:scale-95 transition-all flex items-center gap-3">
+          <span>Explore the Map</span>
+          <span class="font-mono text-base">→</span>
+        </button>
+        <button onclick="app.openTelemetryJson()" class="bg-surface-panel hover:bg-surface-elevated text-text-primary border border-border-subtle hover:border-primary-container font-mono text-xs px-6 py-3.5 tracking-wider uppercase flex items-center gap-2 transition-colors">
+          <span class="material-symbols-outlined text-[16px] text-text-dim">terminal</span>
+          <span>VIEW RAW TELEMETRY JSON</span>
+          <span class="text-[10px] text-text-dim">↗</span>
+        </button>
+      </div>
+
+      <!-- 4 Diagnostic Cards Ticker -->
+      <div class="w-full max-w-4xl mt-12 pt-6 border-t border-border-subtle grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+        <!-- Card 1: Cool Sink -->
+        <div class="bg-surface-panel p-3.5 border border-border-subtle">
+          <div class="flex items-center justify-between font-mono text-[10px] text-text-dim">
+            <span>COOL SINK LOC</span>
+            <span class="text-primary-container font-bold">LIVE</span>
+          </div>
+          <div class="font-mono text-sm text-text-primary mt-1 font-bold" id="heroCoolSinkName">Mangalavanam</div>
+          <div class="font-mono text-[10px] text-text-dim mt-0.5" id="heroCoolSinkTemp">28.2°C (Canopy cover)</div>
+        </div>
+        <!-- Card 2: Critical Peak -->
+        <div class="bg-surface-panel p-3.5 border border-primary-container hotspot-card-glow">
+          <div class="flex items-center justify-between font-mono text-[10px] text-primary-container font-bold">
+            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>CRITICAL PEAK</span>
+            <span class="text-[9px] uppercase px-1 bg-primary-container/20 text-primary-container border border-primary-container/40">WARN</span>
+          </div>
+          <div class="font-mono text-sm text-text-primary mt-1 font-bold" id="heroCriticalPeakName">Willingdon Port</div>
+          <div class="font-mono text-[10px] text-primary-container mt-0.5" id="heroCriticalPeakTemp">43.1°C (Bitumen/Metal)</div>
+        </div>
+        <!-- Card 3: Surface Albedo -->
+        <div class="bg-surface-panel p-3.5 border border-border-subtle">
+          <div class="font-mono text-[10px] text-text-dim">SURFACE ALBEDO</div>
+          <div class="font-mono text-sm text-text-primary mt-1 font-bold" id="heroAlbedoVal">0.11 MEAN</div>
+          <div class="font-mono text-[10px] text-text-dim mt-0.5">Sub-optimal absorption</div>
+        </div>
+        <!-- Card 4: Population At Risk -->
+        <div class="bg-surface-panel p-3.5 border border-border-subtle">
+          <div class="font-mono text-[10px] text-text-dim">POPULATION AT RISK</div>
+          <div class="font-mono text-sm text-text-primary mt-1 font-bold" id="heroPopRiskVal">184,200 RES</div>
+          <div class="font-mono text-[10px] text-text-dim mt-0.5">Zone 1 & 2 Vulnerable</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full text-center py-4 border-t border-border-subtle font-mono text-xs text-text-dim">
+      CLICK EXPLORE OR SELECT REGIONAL NODES TO INSPECT SHAP VECTORS
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 5. SCREEN 4: MAIN MAP DASHBOARD (Kochi Live Terminal) -->
+  <!-- ========================================================================= -->
+  <section id="view-map" class="view-panel pt-14 h-screen flex flex-col relative overflow-hidden hidden">
+    <div class="flex-1 flex relative overflow-hidden">
+
+      <!-- LEFT DIAGNOSTICS & TELEMETRY SIDEBAR -->
+      <aside class="w-72 md:w-80 bg-surface-panel border-r border-border-subtle flex flex-col justify-between p-3.5 z-20 shrink-0 overflow-y-auto">
+        <div class="space-y-4">
+          <!-- Node Status Card -->
+          <div class="p-3 bg-surface-base border border-border-subtle space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs text-text-primary font-bold uppercase" id="sbNodeTitle">Kochi UHI Diagnostic</span>
+              <span class="font-mono text-[10px] px-1.5 py-0.5 bg-primary-container text-white font-bold tracking-wider">NODE-07</span>
+            </div>
+            <div class="font-mono text-[10px] text-text-dim flex items-center justify-between">
+              <span id="sbZoneSubtitle">Zone: Coastal Sector</span>
+              <span class="text-text-primary uppercase" id="sbCityTag">KOCHI-METRO</span>
+            </div>
+            <div class="w-full bg-surface-elevated h-1 mt-1 overflow-hidden">
+              <div class="bg-primary-container h-full w-full"></div>
+            </div>
+          </div>
+
+          <!-- Layer Matrix Switcher -->
+          <div class="space-y-1">
+            <span class="font-mono text-[10px] text-text-dim uppercase tracking-wider block mb-1">Observation Layer</span>
+            <button class="layer-tab active w-full flex items-center justify-between px-3 py-2 bg-surface-elevated border-l-2 border-primary-container font-mono text-xs text-text-primary" data-mode="lst">
+              <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary-container">grid_view</span> Thermal LST Grid</span>
+              <span class="text-[10px] text-primary-container font-bold">ACTIVE</span>
+            </button>
+            <button class="layer-tab w-full flex items-center justify-between px-3 py-2 text-text-dim hover:text-text-primary hover:bg-surface-elevated font-mono text-xs" data-mode="scenario">
+              <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">park</span> Greening Scenario</span>
+              <span class="text-[10px] text-text-dim">WHAT-IF</span>
+            </button>
+            <button class="layer-tab w-full flex items-center justify-between px-3 py-2 text-text-dim hover:text-text-primary hover:bg-surface-elevated font-mono text-xs" data-mode="delta">
+              <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">thermostat</span> Cooling Delta (ΔT)</span>
+              <span class="text-[10px] text-text-dim">DELTA</span>
+            </button>
+            <button class="layer-tab w-full flex items-center justify-between px-3 py-2 text-text-dim hover:text-text-primary hover:bg-surface-elevated font-mono text-xs" data-mode="ndbi">
+              <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">domain</span> NDBI (Built-up)</span>
+              <span class="text-[10px] text-text-dim">RADAR</span>
+            </button>
+            <button class="layer-tab w-full flex items-center justify-between px-3 py-2 text-text-dim hover:text-text-primary hover:bg-surface-elevated font-mono text-xs" data-mode="ndvi">
+              <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">eco</span> NDVI (Vegetation)</span>
+              <span class="text-[10px] text-text-dim">CANOPY</span>
+            </button>
+          </div>
+
+          <!-- Critical Anomaly Telemetry Card -->
+          <div class="border border-border-subtle p-3 bg-surface-base space-y-2">
+            <div class="flex justify-between items-center font-mono text-[10px] text-text-dim uppercase border-b border-border-subtle pb-1">
+              <span>Critical Anomaly</span>
+              <span class="text-primary-container font-bold" id="anomalyCellId">CELL #412</span>
+            </div>
+            <div class="space-y-1 font-mono text-xs">
+              <div class="flex justify-between">
+                <span class="text-text-dim">Surface Peak:</span>
+                <span class="text-primary-container font-bold" id="anomalyPeak">43.1°C</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-dim">Delta vs City Avg:</span>
+                <span class="text-primary-container font-bold" id="anomalyDelta">+8.9°C</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-dim">Built-up Index (NDBI):</span>
+                <span class="text-text-primary font-bold" id="anomalyNdbi">0.103 [CRIT]</span>
+              </div>
+            </div>
+            <button id="btnJumpToAnomaly" class="w-full mt-1 py-1.5 bg-surface-elevated border border-border-subtle hover:border-primary-container text-text-primary font-mono text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors">
+              <span class="material-symbols-outlined text-[13px] text-primary-container">location_searching</span>
+              <span>Inspect Anomaly Cell</span>
+            </button>
+          </div>
+
+          <!-- Simulation Quick Slider -->
+          <div class="p-3 bg-surface-base border border-border-subtle space-y-2">
+            <div class="flex justify-between items-center font-mono text-xs">
+              <span class="text-text-dim uppercase">Counterfactual Greening:</span>
+              <span class="text-primary-container font-bold" id="simSliderVal">+0%</span>
+            </div>
+            <input type="range" min="0" max="30" step="10" value="0" id="simRange" class="w-full accent-primary-container cursor-pointer">
+            <div class="flex justify-between font-mono text-[10px] text-text-dim">
+              <span>0% Baseline</span>
+              <span>+10%</span>
+              <span>+20%</span>
+              <span>+30%</span>
+            </div>
+            <div class="pt-1 text-[11px] font-mono text-text-dim flex justify-between">
+              <span>Hotspot Cooling:</span>
+              <strong class="text-primary-container" id="simHotspotCooling">0.00°C</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Bottom Action -->
+        <div class="pt-3 border-t border-border-subtle space-y-2">
+          <button id="btnSidebarAutoTour" class="w-full py-2 bg-primary-container hover:brightness-110 text-white font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[16px]">tune</span>
+            <span>Launch Hotspot Tour</span>
+          </button>
+          <button id="btnSwitchCitySidebar" class="w-full py-1.5 bg-surface-elevated hover:bg-surface-base text-text-dim hover:text-text-primary font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">swap_horiz</span>
+            <span>Switch Metro Matrix</span>
           </button>
         </div>
-        <div class="modal-body">
-          <div class="modal-grid">
-            <div class="modal-col">
-              <h3>Model Configuration</h3>
-              <ul class="spec-list">
-                <li><strong>Algorithm:</strong> XGBRegressor with Monotonic Constraints</li>
-                <li><strong>Physics Monotonicity:</strong> NDVI (-1), NDBI (+1), Building (+1), Road (+1), Green Dist (+1)</li>
-                <li><strong>Cells Evaluated:</strong> 1,980 uniform 500m × 500m cells</li>
-                <li><strong>Training / Test Split:</strong> 1,584 train / 396 test</li>
-                <li><strong>Physics Sign Violations:</strong> 0 cells (0.00% negative cooling)</li>
-              </ul>
+      </aside>
 
-              <h3 style="margin-top: 1.5rem;">Global SHAP Importance (Ranking)</h3>
-              <div class="chart-container" style="height: 220px;">
-                <canvas id="globalShapChart"></canvas>
+      <!-- MAP VIEWPORT -->
+      <main class="flex-1 relative bg-surface-base">
+        <div id="leafletMap" class="w-full h-full"></div>
+
+        <!-- Floating Vertical Heat Legend (Bottom-Left) -->
+        <div class="absolute bottom-6 left-6 z-[400] bg-surface-base/90 border border-border-subtle p-3 backdrop-blur-md flex flex-col gap-2 font-mono text-xs">
+          <div class="text-[10px] text-text-dim uppercase tracking-wider" id="legendLabel">Surface Temp (°C)</div>
+          <div class="flex items-center gap-3">
+            <div class="w-3.5 h-32 rounded-sm border border-border-subtle" id="legendGradientBar" style="background: linear-gradient(to top, #161616 0%, #451a1a 30%, #8b181e 60%, #E4262E 100%);"></div>
+            <div class="flex flex-col justify-between h-32 text-[10px] text-text-dim">
+              <span id="legendValMax">43.1°C PEAK</span>
+              <span id="legendValMid">34.2°C MEAN</span>
+              <span id="legendValMin">20.0°C BASE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pulsing Target Reticle Box over Selected Cell -->
+        <div id="mapTargetReticle" class="absolute pointer-events-none z-[450] border-2 border-primary-container hidden pulsing-bracket">
+          <span class="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-primary-container"></span>
+          <span class="absolute -top-1.5 -right-1.5 w-3 h-3 border-t-2 border-r-2 border-primary-container"></span>
+          <span class="absolute -bottom-1.5 -left-1.5 w-3 h-3 border-b-2 border-l-2 border-primary-container"></span>
+          <span class="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-primary-container"></span>
+          <div class="absolute -top-6 left-0 bg-surface-base border border-primary-container px-1.5 py-0.5 text-primary-container font-mono text-[9px] uppercase tracking-wider flex items-center gap-1" id="reticleTag">
+            TARGET: CELL
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- 6. SCREEN 5: SLIDE-IN CELL DIAGNOSIS DRAWER -->
+      <!-- ========================================================================= -->
+      <section id="cell-drawer" class="overflow-y-auto">
+        <div class="flex flex-col h-full divide-y divide-border-line">
+          <!-- Drawer Header -->
+          <div class="p-5 bg-surface-panel">
+            <div class="flex items-center justify-between pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_8px_#E4262E]"></span>
+                <span class="font-mono text-xs text-text-primary uppercase tracking-wider font-semibold" id="drawerCellBadge">
+                  SHADENET · CELL #412 DIAGNOSIS
+                </span>
+              </div>
+              <button id="btnCloseDrawer" class="p-1 border border-border-line text-text-primary hover:border-primary-container hover:text-primary-container transition-colors w-7 h-7 flex items-center justify-center bg-surface-elevated">
+                <span class="font-mono text-xs leading-none">✕</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between pt-1 font-mono text-xs text-text-dim">
+              <span id="drawerCoordinates">LAT/LON: 09°58′N, 76°17′E</span>
+              <span class="bg-surface-base px-2 py-0.5 border border-border-line text-primary-container font-semibold" id="drawerZoneBadge">
+                HOTSPOT ANOMALY
+              </span>
+            </div>
+            <!-- Big Diagnostic Headline -->
+            <h3 class="mt-4 font-display text-3xl text-text-primary tracking-wide leading-tight uppercase" id="drawerHeadline">
+              Why is this block 8.9°C above average?
+            </h3>
+            <p class="font-headline text-xs text-text-dim mt-1">
+              Physically-constrained SHAP attribution decomposing satellite thermal radiance drivers.
+            </p>
+          </div>
+
+          <!-- Metric Cluster -->
+          <div class="grid grid-cols-3 divide-x divide-border-line bg-surface-panel font-mono">
+            <div class="p-3.5">
+              <div class="text-text-dim text-[10px] uppercase tracking-wider">SURFACE TEMP</div>
+              <div class="font-display text-3xl text-primary-container leading-none mt-1" id="diagSurfaceTemp">43.1°C</div>
+              <div class="text-text-dim text-[10px] mt-1" id="diagCityMean">Mean: 34.2°C</div>
+            </div>
+            <div class="p-3.5">
+              <div class="text-text-dim text-[10px] uppercase tracking-wider">DELTA SHIFT</div>
+              <div class="font-display text-3xl text-primary-container leading-none mt-1" id="diagDeltaShift">+8.9°C</div>
+              <div class="text-primary-container text-[10px] font-bold mt-1">CRITICAL PEAK</div>
+            </div>
+            <div class="p-3.5">
+              <div class="text-text-dim text-[10px] uppercase tracking-wider">VEGETATION (NDVI)</div>
+              <div class="font-display text-3xl text-text-primary leading-none mt-1" id="diagNdviVal">0.36</div>
+              <div class="text-text-dim text-[10px] mt-1">Canopy: Deficit</div>
+            </div>
+          </div>
+
+          <!-- SHAP Factor Decomposition (Filled Red for Warming, White Outline for Cooling) -->
+          <div class="p-5 space-y-4 bg-surface-elevated font-mono">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-primary-container">analytics</span>
+                <span class="font-display text-xl uppercase tracking-wider text-text-primary">SHAP Factor Attribution</span>
+              </div>
+              <span class="text-xs text-text-dim" id="drawerBaseVal">BASE = 34.2°C</span>
+            </div>
+
+            <!-- Axis Direction Legend -->
+            <div class="grid grid-cols-2 text-[10px] text-text-dim border-b border-border-line pb-1">
+              <div class="text-left">← COOLING INFLUENCE (−ΔT)</div>
+              <div class="text-right">WARMING ATTRIBUTION (+ΔT) →</div>
+            </div>
+
+            <!-- Dynamic Drivers List -->
+            <div id="drawerShapBars" class="space-y-3">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Cooling Scenario Section (Interactive Slider with Old Struck-through vs New Temp) -->
+          <div class="p-5 space-y-3 bg-surface-panel font-mono flex-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-text-primary font-bold uppercase flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-primary-container">bolt</span>
+                <span>Counterfactual Greening Simulation</span>
+              </span>
+              <span class="text-xs text-primary-container font-bold" id="drawerScenSliderLabel">+20% Vegetation</span>
+            </div>
+
+            <!-- Struck-through Old Temp vs New Temp Display -->
+            <div class="p-3 bg-surface-base border border-border-line flex items-baseline justify-between">
+              <div class="flex items-baseline gap-3">
+                <span class="text-lg line-through text-text-dim font-bold" id="drawerOldTemp">43.1°C</span>
+                <span class="material-symbols-outlined text-[16px] text-text-dim">arrow_forward</span>
+                <span class="font-display text-3xl text-primary-container font-bold" id="drawerNewTemp">40.3°C</span>
+              </div>
+              <div class="text-right font-mono text-xs">
+                <span class="text-text-dim block">PREDICTED COOLING</span>
+                <span class="text-primary-container font-bold text-sm" id="drawerCoolingDelta">−2.80°C</span>
               </div>
             </div>
 
-            <div class="modal-col">
-              <h3>SHAP Beeswarm Summary Plot</h3>
-              <div class="beeswarm-wrap">
-                <img src="/model/shap_summary.png" alt="SHAP Beeswarm Plot" id="beeswarmImg" class="modal-img" onerror="this.src='/api/shap_image';">
+            <!-- Simulation Slider -->
+            <div class="space-y-1 pt-1">
+              <input type="range" min="0" max="30" step="10" value="20" id="drawerScenSlider" class="w-full accent-primary-container cursor-pointer">
+              <div class="flex justify-between text-[10px] text-text-dim">
+                <span>0% (Baseline)</span>
+                <span>+10%</span>
+                <span>+20%</span>
+                <span>+30%</span>
               </div>
-              <div class="audit-callout">
-                <i class="fa-solid fa-shield-halved"></i>
-                <div>
-                  <strong>Audit Verified:</strong> 15 collinear redundant features pruned down to 5 independent physical drivers, completely eliminating attribution flipping.
-                </div>
+            </div>
+
+            <!-- Cell Indicators -->
+            <div class="grid grid-cols-2 gap-2 pt-2 text-[11px]">
+              <div class="p-2 bg-surface-base border border-border-line flex flex-col">
+                <span class="text-text-dim text-[10px]">Built-up Index (NDBI):</span>
+                <span class="text-text-primary font-bold" id="drawerCellNdbi">0.103</span>
+              </div>
+              <div class="p-2 bg-surface-base border border-border-line flex flex-col">
+                <span class="text-text-dim text-[10px]">Road Density:</span>
+                <span class="text-text-primary font-bold" id="drawerCellRoad">0.033</span>
+              </div>
+              <div class="p-2 bg-surface-base border border-border-line flex flex-col">
+                <span class="text-text-dim text-[10px]">Building Density:</span>
+                <span class="text-text-primary font-bold" id="drawerCellBldg">17.5%</span>
+              </div>
+              <div class="p-2 bg-surface-base border border-border-line flex flex-col">
+                <span class="text-text-dim text-[10px]">Dist to Green Space:</span>
+                <span class="text-text-primary font-bold" id="drawerCellGreenDist">500 m</span>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 7. MODEL & SHAP ARCHITECTURE MODAL -->
+  <!-- ========================================================================= -->
+  <div id="modalModelArch" class="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-panel border border-border-line w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 space-y-6 shadow-2xl font-mono">
+      <div class="flex justify-between items-center border-b border-border-line pb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-container">memory</span>
+          <span class="font-headline font-black text-xl uppercase tracking-wider text-text-primary">Physics-Informed XGBoost & SHAP System</span>
+        </div>
+        <button id="btnCloseModelModal" class="text-text-dim hover:text-text-primary font-mono text-base px-2 py-1 border border-border-line">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+        <div class="space-y-3">
+          <h4 class="font-bold text-text-primary uppercase border-b border-border-line pb-1">Mathematical Architecture</h4>
+          <ul class="space-y-1.5 text-text-dim">
+            <li><strong>Model:</strong> Gradient Boosted Decision Trees (XGBRegressor)</li>
+            <li><strong>Monotonic Constraints:</strong> (NDVI: -1, NDBI: +1, Building: +1, Road: +1, GreenDist: +1)</li>
+            <li><strong>Objective:</strong> Mean Squared Error on Landsat 9 Thermal Band (TIRS ST_B10)</li>
+            <li><strong>Sign Consistency:</strong> 100% physically valid (0 cells show vegetation increasing heat)</li>
+            <li><strong>Explainability Engine:</strong> TreeExplainer per-cell SHAP attributions</li>
+          </ul>
+
+          <h4 class="font-bold text-text-primary uppercase border-b border-border-line pb-1 pt-3">Global Feature Ranking (|SHAP| Mean)</h4>
+          <div id="modalGlobalShapList" class="space-y-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-bold text-text-primary uppercase border-b border-border-line pb-1">Beeswarm Attribution Matrix</h4>
+          <div class="bg-white p-2 border border-border-line">
+            <img src="/model/shap_summary.png" alt="SHAP Beeswarm Plot" class="w-full h-auto">
+          </div>
+          <p class="text-[10px] text-text-dim">
+            Generated via TreeExplainer: NDBI (built-up) and Road Density are dominant positive drivers; NDVI provides consistent negative cooling contributions.
+          </p>
         </div>
       </div>
     </div>

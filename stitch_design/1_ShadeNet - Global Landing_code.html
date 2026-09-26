@@ -1,0 +1,183 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ShadeNet // Planetary Thermal Observational System</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&amp;family=Bricolage+Grotesque:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<!-- Fonts: Montserrat & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Montserrat:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"text-dim": "rgba(232, 232, 232, 0.55)", "secondary-fixed": "#d5e8c7", "on-primary-fixed": "#052100", "primary-fixed-dim": "#a7d390", "surface-container-low": "#1a1c18", "on-secondary-fixed": "#111f0b", "surface-container-highest": "#333630", "surface-bright": "#383a35", outline: "#8d9386", "on-tertiary-container": "#7b5667", "on-error": "#690005", "surface-container": "#1e201c", "inverse-primary": "#426831", "surface-tint": "#a7d390", "secondary-fixed-dim": "#baccac", "surface-dim": "#121410", "surface-panel": "#161616", "on-tertiary-fixed-variant": "#5f3d4d", "tertiary-fixed": "#ffd8e8", "primary-fixed": "#c2efaa", "accent-heat": "#E4262E", "on-secondary-container": "#acbe9f", error: "#ffb4ab", secondary: "#baccac", "inverse-surface": "#e2e3db", "on-secondary": "#25341e", "tertiary-fixed-dim": "#e8bace", "on-secondary-fixed-variant": "#3b4b33", "on-primary-fixed-variant": "#2b4f1b", primary: "#ebffdc", "outline-variant": "#43493e", tertiary: "#fff6f8", "error-container": "#93000a", "on-surface-variant": "#c3c9ba", "on-primary-container": "#446a33", "surface-base": "#0A0A0A", "inverse-on-surface": "#2f312c", "on-surface": "#e2e3db", "text-primary": "#E8E8E8", "surface-container-high": "#282b26", surface: "#121410", "on-tertiary": "#462737", "on-primary": "#143806", "secondary-container": "#3e4e35", background: "#121410", "surface-variant": "#333630", "on-error-container": "#ffdad6", "border-subtle": "rgba(255, 255, 255, 0.08)", "on-background": "#e2e3db", "on-tertiary-fixed": "#2e1221", "surface-container-lowest": "#0c0f0b", "primary-container": "#bce9a4", "tertiary-container": "#ffcfe4"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"space-xl": "2.5rem", margin: "1.5rem", "space-xs": "0.25rem", "margin-lg": "2.5rem", "gutter-lg": "1.5rem", gutter: "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem"}, fontFamily: {"mono-data": ["JetBrains Mono"], "headline-xl": ["Montserrat"], "headline-md": ["Montserrat"], "headline-xl-mobile": ["Montserrat"], "body-lg": ["Montserrat"], "mono-hero-mobile": ["JetBrains Mono"], "mono-hero": ["JetBrains Mono"], "mono-telemetry": ["JetBrains Mono"], "body-sm": ["Montserrat"], "headline-lg": ["Montserrat"], headline: ["Montserrat"], display: ["Montserrat"], body: ["Montserrat"], label: ["Bricolage Grotesque"]}, fontSize: {"mono-data": ["15px", {lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "600"}], "headline-xl": ["56px", {lineHeight: "64px", letterSpacing: "-0.04em", fontWeight: "900"}], "headline-md": ["22px", {lineHeight: "30px", letterSpacing: "-0.01em", fontWeight: "700"}], "headline-xl-mobile": ["36px", {lineHeight: "44px", letterSpacing: "-0.03em", fontWeight: "900"}], "body-lg": ["16px", {lineHeight: "26px", fontWeight: "400"}], "mono-hero-mobile": ["44px", {lineHeight: "52px", letterSpacing: "-0.03em", fontWeight: "700"}], "mono-hero": ["72px", {lineHeight: "80px", letterSpacing: "-0.05em", fontWeight: "700"}], "mono-telemetry": ["11px", {lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "500"}], "body-sm": ["13px", {lineHeight: "20px", fontWeight: "400"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800"}]}}}};</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    
+    /* Scientific Calibration Reticle Background */
+    .terminal-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+    
+    .thermal-glow-radial {
+      background: radial-gradient(circle 320px at 50% 50%, rgba(228, 38, 46, 0.22) 0%, rgba(228, 38, 46, 0.05) 55%, transparent 100%);
+    }
+
+    .btn-thermal-glow {
+      box-shadow: 0 0 24px rgba(228, 38, 46, 0.45);
+    }
+    .btn-thermal-glow:hover {
+      box-shadow: 0 0 36px rgba(228, 38, 46, 0.75);
+    }
+  </style>
+</head>
+<body class="bg-surface-base text-text-primary antialiased min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-primary-container selection:text-text-primary">
+<!-- TopNavBar (Shared Component Anchor) -->
+<header class="w-full px-margin-lg flex items-center justify-between h-14 z-50 sticky top-0 bg-surface-panel dark:bg-surface-panel border-b border-border-subtle dark:border-border-subtle">
+<!-- Brand Anchor -->
+<div class="flex items-center gap-6">
+<a class="font-mono-data text-mono-data text-text-primary dark:text-text-primary lowercase tracking-tight flex items-center gap-2" href="#" style="font-weight: 800;">
+<span class="text-primary-container text-xs">●</span>
+<span class="">● shadenet</span>
+</a>
+<span class="hidden lg:inline-block px-2 py-0.5 border border-border-subtle text-text-dim font-mono-telemetry text-mono-telemetry uppercase font-semibold">
+        SYS.VER 4.1.0-STABLE
+      </span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6">
+<!-- Active Intent mapped to Observatory for Global Terminal Landing -->
+<a class="text-text-primary dark:text-text-primary border-b border-primary-container font-mono-telemetry pb-1 font-semibold" href="#">Observatory</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry pb-1 hover:text-text-primary dark:hover:text-text-primary font-semibold" href="#">Cities</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry pb-1 hover:text-text-primary dark:hover:text-text-primary font-semibold" href="#">Telemetry</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry pb-1 hover:text-text-primary dark:hover:text-text-primary font-semibold" href="#">Diagnostics</a>
+</nav>
+<!-- Trailing Actions Cluster -->
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-3 pr-3 border-r border-border-subtle">
+<button aria-label="Terminal" class="text-text-dim hover:text-text-primary transition-colors duration-150" title="Terminal">
+<span class="material-symbols-outlined text-sm">terminal</span>
+</button>
+<button aria-label="Satellite Uplink" class="text-text-dim hover:text-text-primary transition-colors duration-150" title="Satellite Uplink">
+<span class="material-symbols-outlined text-sm">satellite_alt</span>
+</button>
+<button aria-label="Settings" class="text-text-dim hover:text-text-primary transition-colors duration-150" title="Settings">
+<span class="material-symbols-outlined text-sm">settings</span>
+</button>
+</div>
+<a class="text-text-dim font-mono-telemetry text-mono-telemetry hover:text-text-primary transition-colors duration-150 hidden sm:block font-semibold" href="#docs" style="font-weight: 600;">Docs</a>
+<button class="bg-primary-container text-on-primary-container px-3 py-1 font-mono-telemetry text-mono-telemetry uppercase tracking-wider rounded-none hover:brightness-125 transition-all duration-100 flex items-center gap-1.5 font-semibold">
+<span class="">Deploy Sensor</span>
+<span class="material-symbols-outlined text-xs">add</span>
+</button>
+</div>
+</header>
+<!-- Hero Content Canvas -->
+<main class="relative flex-1 flex flex-col justify-center items-center px-margin terminal-grid overflow-hidden py-12 md:py-20">
+<!-- Coordinate Corner Brackets & Calibrations -->
+<div class="absolute top-4 left-6 hidden md:flex flex-col font-mono-telemetry text-mono-telemetry text-text-dim space-y-1 select-none pointer-events-none">
+<div class="">LOC: 00°00'00.0"N 00°00'00.0"E</div>
+<div class="">REF: RADIANCE_LST_TERRA_MODIS</div>
+<div class="">RES: 30M_PIXEL_RES</div>
+</div>
+<div class="absolute top-4 right-6 hidden md:flex flex-col text-right font-mono-telemetry text-mono-telemetry text-text-dim space-y-1 select-none pointer-events-none">
+<div class="">MOD_STATE: ACTIVE_INFERENCE</div>
+<div class="">SURFACE_HEAT_ANOMALY: +4.84°C</div>
+<div class="">HEURISTIC: EXPLAINABLE_SHAP</div>
+</div>
+<!-- Center Stage Radial Glow Backlight -->
+<div class="absolute w-[640px] h-[640px] thermal-glow-radial pointer-events-none z-0"></div>
+<!-- Center Hero Stack -->
+<div class="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
+<!-- Operational Metric Pill -->
+<div class="mb-6 inline-flex items-center gap-2 px-3 py-1 bg-surface-panel border border-border-subtle font-mono-telemetry text-mono-telemetry tracking-widest text-text-dim uppercase">
+<span class="inline-block w-1.5 h-1.5 bg-primary-container animate-pulse"></span>
+<span class="">GLOBAL SURFACE TEMPERATURE MONITOR // 24-HR CYCLE</span>
+</div>
+<!-- Main Wordmark -->
+<h1 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-text-primary tracking-tighter uppercase select-none mb-4">
+        ShadeNet
+      </h1>
+<!-- Subtitle -->
+<p class="font-body-lg text-body-lg text-text-primary max-w-2xl text-center mb-6 px-4 font-normal">
+        An AI&amp;ML model that detects urban heat islands, explains their causes, and simulates cooling interventions — city by city.
+      </p>
+<!-- Monospace Sub-descriptor -->
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mb-10 tracking-widest flex items-center justify-center gap-3 select-none">
+<span class="">satellite data</span>
+<span class="text-primary-container">·</span>
+<span class="">explainable ML</span>
+<span class="text-primary-container">·</span>
+<span class="">scenario simulation</span>
+</div>
+<!-- Vivid-Red Hero CTA Button -->
+<div class="flex flex-col items-center gap-3">
+<a class="bg-primary-container text-text-primary font-mono-data text-mono-data px-8 py-3.5 tracking-tight rounded-none flex items-center gap-3 btn-thermal-glow hover:brightness-110 active:brightness-95 transition-all duration-150 border border-primary-container" href="#cities">
+<span class="">Get Started</span>
+<span class="font-mono-data text-mono-data">→</span>
+</a>
+<span class="font-mono-telemetry text-mono-telemetry text-text-dim mt-2 tracking-wider">
+          PRESS [ENTER] OR DISCOVER CITY ARCHIVES
+        </span>
+</div>
+<!-- Scientific HUD Micro-matrix -->
+<div class="mt-16 w-full max-w-3xl grid grid-cols-2 md:grid-cols-4 gap-2 text-left">
+<div class="bg-surface-panel border border-border-subtle p-3 flex flex-col justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim">MAPPED CITIES</div>
+<div class="font-mono-data text-mono-data text-text-primary mt-1">48 METROS</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-2">SURFACE VECTORS 100%</div>
+</div>
+<div class="bg-surface-panel border border-border-subtle p-3 flex flex-col justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim">AVG THERMAL OFFSET</div>
+<div class="font-mono-data text-mono-data text-primary-container mt-1">+6.4°C LST</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-2">UHI INTENSITY: HIGH</div>
+</div>
+<div class="bg-surface-panel border border-border-subtle p-3 flex flex-col justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim">CANOPY DEFICIT</div>
+<div class="font-mono-data text-mono-data text-text-primary mt-1">-34.2% CRIT</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-2">DELTA NORMALIZED</div>
+</div>
+<div class="bg-surface-panel border border-border-subtle p-3 flex flex-col justify-between">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim">INFERENCE LATENCY</div>
+<div class="font-mono-data text-mono-data text-text-primary mt-1">142 MS</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-2">SUBSURFACE XG-BOOST</div>
+</div>
+</div>
+</div>
+<!-- Bottom Reticle Lines -->
+<div class="absolute bottom-3 left-6 font-mono-telemetry text-mono-telemetry text-text-dim hidden md:block">
+      SYS_READY // CALIBRATED TO WGS84 DATUM
+    </div>
+<div class="absolute bottom-3 right-6 font-mono-telemetry text-mono-telemetry text-text-dim hidden md:flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full border border-primary-container bg-primary-container"></span>
+<span class="">NODE_ONLINE: BLR_SENSOR_ARRAY_09</span>
+</div>
+</main>
+<!-- Footer (Shared Component Anchor) -->
+<footer class="w-full px-margin-lg py-gutter-lg flex flex-col md:flex-row justify-between items-center z-10 border-t border-border-subtle dark:border-border-subtle bg-surface-base dark:bg-surface-base">
+<div class="flex flex-col md:flex-row items-center gap-4 text-center md:text-left mb-4 md:mb-0">
+<span class="font-mono-data text-mono-data text-text-dim dark:text-text-dim">
+        SHADENET INSTRUMENTATION PLATFORM // PLANETARY THERMAL OBSERVATIONAL SYSTEM
+      </span>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-4 md:gap-6 font-mono-telemetry text-mono-telemetry">
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Kochi Terminal</a><a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Delhi Terminal</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Bangalore Terminal</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Mumbai Terminal</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Chennai Terminal</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">API Spec</a>
+<a class="text-text-dim dark:text-text-dim font-mono-telemetry hover:text-primary-container dark:hover:text-primary-container transition-colors duration-150" href="#">Sensor Network</a>
+</div>
+</footer>
+
+
+</body></html>

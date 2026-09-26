@@ -111,21 +111,28 @@ def get_grid():
 @app.route("/api/grid/<int:cell_id>")
 def get_cell(cell_id):
     """Single cell's feature data"""
-    cell = cell_index.get(cell_id)
+    city = request.args.get("city", "kochi").lower()
+    c_index = cell_indices.get(city, cell_index)
+    cell = c_index.get(cell_id)
     if not cell:
-        return jsonify({"error": f"Cell {cell_id} not found"}), 404
+        return jsonify({"error": f"Cell {cell_id} not found in {city}"}), 404
     return jsonify(cell)
 
 
 @app.route("/api/hotspots")
 def get_hotspots():
     """Only cells where is_hotspot = true"""
-    hotspots = [f for f in features if f["properties"].get("is_hotspot")]
+    city = request.args.get("city", "kochi").lower()
+    cdata = cities_data.get(city) or cities_data.get("kochi")
+    c_meta = cdata.get("metadata", {})
+    c_features = cdata.get("features", [])
+    hotspots = [f for f in c_features if f["properties"].get("is_hotspot")]
     return jsonify({
         "type": "FeatureCollection",
         "metadata": {
+            "city": c_meta.get("city", city.title()),
             "count": len(hotspots),
-            "threshold_lst": metadata.get("hotspot_threshold"),
+            "threshold_lst": c_meta.get("hotspot_threshold"),
         },
         "features": hotspots,
     })
@@ -134,10 +141,17 @@ def get_hotspots():
 @app.route("/api/coldspots")
 def get_coldspots():
     """Only cells where is_coldspot = true"""
-    coldspots = [f for f in features if f["properties"].get("is_coldspot")]
+    city = request.args.get("city", "kochi").lower()
+    cdata = cities_data.get(city) or cities_data.get("kochi")
+    c_meta = cdata.get("metadata", {})
+    c_features = cdata.get("features", [])
+    coldspots = [f for f in c_features if f["properties"].get("is_coldspot")]
     return jsonify({
         "type": "FeatureCollection",
-        "metadata": {"count": len(coldspots)},
+        "metadata": {
+            "city": c_meta.get("city", city.title()),
+            "count": len(coldspots),
+        },
         "features": coldspots,
     })
 
@@ -171,11 +185,13 @@ def get_stats():
 @app.route("/api/scenario/<int:cell_id>")
 def get_scenario(cell_id):
     """Cooling scenario for a specific cell"""
+    city = request.args.get("city", "kochi").lower()
+    c_index = cell_indices.get(city, cell_index)
     ndvi_increase = request.args.get("ndvi_increase", "10", type=int)
-    cell = cell_index.get(cell_id)
+    cell = c_index.get(cell_id)
 
     if not cell:
-        return jsonify({"error": f"Cell {cell_id} not found"}), 404
+        return jsonify({"error": f"Cell {cell_id} not found in {city}"}), 404
 
     scenario_key = f"ndvi_plus_{ndvi_increase}"
     scenarios = cell["properties"].get("scenarios", {})
@@ -191,6 +207,7 @@ def get_scenario(cell_id):
 
     return jsonify({
         "cell_id": cell_id,
+        "city": city,
         "scenario": scenario_key,
         "ndvi_increase_pct": ndvi_increase,
         "original_lst": original_lst,
@@ -203,17 +220,22 @@ def get_scenario(cell_id):
 @app.route("/api/zones")
 def get_zones():
     """Cells grouped by zone type"""
+    city = request.args.get("city", "kochi").lower()
+    cdata = cities_data.get(city) or cities_data.get("kochi")
+    c_meta = cdata.get("metadata", {})
+    c_features = cdata.get("features", [])
     zone_type = request.args.get("type")
 
-    filtered = features
+    filtered = c_features
     if zone_type:
-        filtered = [f for f in features if f["properties"].get("zone_type") == zone_type]
+        filtered = [f for f in c_features if f["properties"].get("zone_type") == zone_type]
 
     return jsonify({
         "type": "FeatureCollection",
         "metadata": {
+            "city": c_meta.get("city", city.title()),
             "count": len(filtered),
-            "zone_distribution": metadata.get("zone_distribution"),
+            "zone_distribution": c_meta.get("zone_distribution"),
         },
         "features": filtered,
     })

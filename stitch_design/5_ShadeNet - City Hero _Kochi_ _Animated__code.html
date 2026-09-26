@@ -1,0 +1,463 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>shadenet // Kochi Urban Heat Observatory</title>
+<!-- Google Fonts: Montserrat & Bricolage Grotesque & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&amp;family=Bricolage+Grotesque:wght@400;500;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "text-dim": "rgba(232, 232, 232, 0.55)",
+          "secondary-fixed": "#d6e8c7",
+          "on-primary-fixed": "#062100",
+          "primary-fixed-dim": "#a7d390",
+          "surface-container-low": "#1a1c17",
+          "on-secondary-fixed": "#111f0a",
+          "surface-container-highest": "#333630",
+          "surface-bright": "#383a34",
+          "outline": "#8d9386",
+          "on-tertiary-container": "#3e2030",
+          "on-error": "#690005",
+          "surface-container": "#1e201b",
+          "inverse-primary": "#426831",
+          "surface-tint": "#a7d390",
+          "secondary-fixed-dim": "#baccac",
+          "surface-dim": "#12140f",
+          "surface-panel": "#161616",
+          "on-tertiary-fixed-variant": "#5f3d4d",
+          "tertiary-fixed": "#ffd8e8",
+          "primary-fixed": "#c3efaa",
+          "accent-heat": "#E4262E",
+          "on-secondary-container": "#acbe9e",
+          "error": "#ffb4ab",
+          "secondary": "#baccac",
+          "inverse-surface": "#e2e3db",
+          "on-secondary": "#26341e",
+          "tertiary-fixed-dim": "#e8bace",
+          "on-secondary-fixed-variant": "#3b4b33",
+          "on-primary-fixed-variant": "#2b4f1b",
+          "primary": "#a7d390",
+          "outline-variant": "#43493e",
+          "tertiary": "#e8bace",
+          "error-container": "#93000a",
+          "on-surface-variant": "#c3c9ba",
+          "on-primary-container": "#ffffff",
+          "surface-base": "#0A0A0A",
+          "inverse-on-surface": "#2f312c",
+          "on-surface": "#e2e3db",
+          "text-primary": "#E8E8E8",
+          "surface-container-high": "#282b25",
+          "surface": "#12140f",
+          "on-tertiary": "#462737",
+          "on-primary": "#153806",
+          "secondary-container": "#3e4e35",
+          "background": "#12140f",
+          "surface-variant": "#333630",
+          "on-error-container": "#ffdad6",
+          "border-subtle": "rgba(255, 255, 255, 0.08)",
+          "on-background": "#e2e3db",
+          "on-tertiary-fixed": "#2e1221",
+          "surface-container-lowest": "#0c0f0a",
+          "primary-container": "#5a8147",
+          "tertiary-container": "#af8598"
+        },
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          full: "9999px"
+        },
+        spacing: {
+          "space-xl": "2.5rem",
+          "margin": "1.5rem",
+          "space-xs": "0.25rem",
+          "margin-lg": "2.5rem",
+          "gutter-lg": "1.5rem",
+          "gutter": "1rem",
+          "space-sm": "0.5rem",
+          "space-md": "1rem",
+          "space-lg": "1.5rem"
+        },
+        fontFamily: {
+          "mono-data": ["JetBrains Mono", "Bricolage Grotesque", "monospace"],
+          "headline-xl": ["Montserrat", "sans-serif"],
+          "headline-md": ["Montserrat", "sans-serif"],
+          "body-lg": ["Montserrat", "sans-serif"],
+          "mono-telemetry": ["JetBrains Mono", "monospace"],
+          "body-sm": ["Montserrat", "sans-serif"],
+          "label": ["Bricolage Grotesque", "sans-serif"]
+        },
+        fontSize: {
+          "mono-data": ["15px", {lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "600"}],
+          "headline-xl": ["56px", {lineHeight: "64px", letterSpacing: "-0.04em", fontWeight: "900"}],
+          "mono-telemetry": ["11px", {lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "500"}]
+        }
+      }
+    }
+  };
+</script>
+<style>
+    /* Thermal Aura Breathing Pulse Animation */
+    @keyframes thermalBreathing {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(0.92);
+        opacity: 0.35;
+        filter: blur(80px);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.18);
+        opacity: 0.65;
+        filter: blur(100px);
+      }
+    }
+
+    /* Radar / Telemetry Scanline Drift Sweep */
+    @keyframes radarSweep {
+      0% {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.8;
+      }
+      85% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(1000%);
+        opacity: 0;
+      }
+    }
+
+    /* Live Ping Ripple */
+    @keyframes pingRipple {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(2.6);
+        opacity: 0;
+      }
+    }
+
+    /* Hotspot Critical Border Pulse */
+    @keyframes hotspotPulse {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(228, 38, 46, 0.25), inset 0 0 8px rgba(228, 38, 46, 0.15);
+        border-color: rgba(228, 38, 46, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(228, 38, 46, 0.55), inset 0 0 14px rgba(228, 38, 46, 0.3);
+        border-color: rgba(228, 38, 46, 0.85);
+      }
+    }
+
+    /* Hero Glow Shadow */
+    @keyframes heroGlow {
+      0%, 100% {
+        text-shadow: 0 0 24px rgba(186, 204, 172, 0.25);
+      }
+      50% {
+        text-shadow: 0 0 45px rgba(167, 211, 144, 0.45);
+      }
+    }
+
+    .thermal-glow-bg {
+      animation: thermalBreathing 7s ease-in-out infinite;
+    }
+
+    .scanline-sweep {
+      animation: radarSweep 9s linear infinite;
+    }
+
+    .live-ping {
+      animation: pingRipple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+    .hotspot-card-glow {
+      animation: hotspotPulse 3.5s ease-in-out infinite;
+    }
+
+    .hero-metric-glow {
+      animation: heroGlow 5s ease-in-out infinite;
+    }
+
+    .grid-lines {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    }
+
+    /* Magnetic & Thermal Button Glow */
+    .btn-thermal-glow {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-thermal-glow:hover {
+      box-shadow: 0 0 28px rgba(90, 129, 71, 0.6), inset 0 0 12px rgba(167, 211, 144, 0.3);
+      border-color: #a7d390;
+    }
+
+    /* Interactive Hero Reticle */
+    .hero-reticle-box {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    }
+    .hero-reticle-box:hover {
+      transform: scale(1.02);
+    }
+    .hero-reticle-box:hover .reticle-corner {
+      border-color: #a7d390;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Reduced Motion Handling */
+    @media (prefers-reduced-motion: reduce) {
+      .thermal-glow-bg,
+      .scanline-sweep,
+      .live-ping,
+      .hotspot-card-glow,
+      .hero-metric-glow {
+        animation: none !important;
+      }
+      .hero-reticle-box:hover {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-surface-base text-text-primary min-h-screen flex flex-col justify-between selection:bg-accent-heat selection:text-white relative overflow-x-hidden">
+<!-- Reticle & Matrix Canvas Overlay with Sweeping Scanline -->
+<div class="fixed inset-0 grid-lines pointer-events-none z-0">
+<div class="scanline-sweep absolute left-0 right-0 h-28 bg-gradient-to-b from-transparent via-primary-container/10 to-transparent pointer-events-none"></div>
+</div>
+<!-- Ambient Peripheral Scanlines / Radar Frame Marks -->
+<div class="fixed top-24 left-6 pointer-events-none hidden lg:flex flex-col gap-2 font-mono-telemetry text-mono-telemetry text-text-dim opacity-40 z-0 select-none">
+<div class="flex items-center gap-2">
+<span class="inline-block w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+<span class="">LAT: 09°58'01.2"N</span>
+</div>
+<div class="">LON: 76°16'58.8"E</div>
+<div class="">ALT: 4.2M MSL</div>
+<div class="w-12 h-[1px] bg-border-subtle my-1"></div>
+<div class="text-[10px] tracking-widest text-text-dim/80">SENSOR_GRID: KOCHI-METRO-400</div>
+</div>
+<div class="fixed top-24 right-6 pointer-events-none hidden lg:flex flex-col items-end gap-2 font-mono-telemetry text-mono-telemetry text-text-dim opacity-40 z-0 select-none">
+<div class="">BAND: LWIR-11-THERMAL</div>
+<div class="">RESOLUTION: 30M/PIXEL</div>
+<div class="">PASS_CYCLE: 10:30 UTC</div>
+<div class="w-12 h-[1px] bg-border-subtle my-1"></div>
+<div class="text-accent-heat font-mono-telemetry flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-heat animate-ping"></span>
+<span class="">HOTSPOT_DELTA_CRITICAL</span>
+</div>
+</div>
+<!-- Screen Header Navigation -->
+<header class="w-full px-margin md:px-margin-lg flex items-center justify-between h-14 z-50 sticky top-0 bg-surface-panel/90 backdrop-blur-md border-b border-border-subtle">
+<!-- Brand Wordmark Badge -->
+<a class="font-mono-data text-mono-data text-text-primary lowercase tracking-tight flex items-center gap-2 group" href="#">
+<span class="relative flex h-2.5 w-2.5 items-center justify-center">
+<span class="live-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary group-hover:scale-125 transition-transform duration-200"></span>
+</span>
+<span class="tracking-tight font-bold font-mono-data text-on-surface">shadenet</span>
+<span class="hidden sm:inline font-mono-telemetry text-mono-telemetry text-text-dim px-2 py-0.5 bg-surface-base border border-border-subtle ml-2 transition-colors duration-150 group-hover:border-primary/40 group-hover:text-primary">NODE // KOCHI-KL</span>
+</a>
+<!-- Task Navigation Link -->
+<div class="flex items-center gap-4">
+<a class="group font-mono-telemetry text-mono-telemetry text-text-primary hover:text-primary transition-all duration-150 flex items-center gap-2 py-1 px-2.5 border border-transparent hover:border-border-subtle hover:bg-surface-container-low rounded-none" href="#">
+<span class="transition-transform duration-200 group-hover:-translate-x-1 inline-block">←</span>
+<span class="">back to cities</span>
+</a>
+</div>
+</header>
+<!-- Center-Stage Hero Section -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-margin py-10 md:py-16 max-w-5xl mx-auto w-full text-center">
+<!-- Dual Thermal Breathing Aura Background -->
+<div class="thermal-glow-bg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] md:w-[620px] h-[340px] md:h-[620px] pointer-events-none -z-10 rounded-full bg-gradient-to-tr from-accent-heat/20 via-amber-600/15 to-primary-container/25 mix-blend-screen filter blur-[90px]"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] md:w-[440px] h-[220px] md:h-[440px] pointer-events-none -z-10 rounded-full bg-accent-heat/15 filter blur-[70px]"></div>
+<!-- Telemetry Supertitle Badge -->
+<div class="inline-flex items-center gap-2.5 px-3 py-1 bg-surface-panel/90 border border-border-subtle mb-6 backdrop-blur-sm transition-all duration-200 hover:border-primary/50 shadow-sm cursor-default">
+<span class="relative flex h-2 w-2">
+<span class="live-ping absolute inline-flex h-full w-full rounded-full bg-accent-heat opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-accent-heat"></span>
+</span>
+<span class="font-mono-telemetry text-mono-telemetry text-text-primary tracking-widest uppercase">URBAN HEAT ISLAND INTENSITY // MAXIMUM INTRA-URBAN GRADIENT</span>
+</div>
+<!-- Center-Stage Hero Card with Reticle Marks & Hover Zoom -->
+<div class="hero-reticle-box group/hero relative my-2 px-8 py-4 select-none cursor-crosshair inline-block rounded-sm">
+<!-- Active Corner Registration Marks -->
+<div class="reticle-corner absolute -top-1 -left-1 w-3.5 h-3.5 border-t-2 border-l-2 border-border-subtle transition-all duration-300 group-hover/hero:border-primary group-hover/hero:w-5 group-hover/hero:h-5"></div>
+<div class="reticle-corner absolute -top-1 -right-1 w-3.5 h-3.5 border-t-2 border-r-2 border-border-subtle transition-all duration-300 group-hover/hero:border-primary group-hover/hero:w-5 group-hover/hero:h-5"></div>
+<div class="reticle-corner absolute -bottom-1 -left-1 w-3.5 h-3.5 border-b-2 border-l-2 border-border-subtle transition-all duration-300 group-hover/hero:border-primary group-hover/hero:w-5 group-hover/hero:h-5"></div>
+<div class="reticle-corner absolute -bottom-1 -right-1 w-3.5 h-3.5 border-b-2 border-r-2 border-border-subtle transition-all duration-300 group-hover/hero:border-primary group-hover/hero:w-5 group-hover/hero:h-5"></div>
+<!-- Center Coordinate Hover Reticle Crosshair (Hidden on default, visible on hover) -->
+<div class="absolute inset-0 pointer-events-none opacity-0 group-hover/hero:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+<div class="w-full h-[1px] bg-primary/20"></div>
+<div class="h-full w-[1px] bg-primary/20 absolute"></div>
+</div>
+<!-- Main Dynamic Animated Hero Number -->
+<div class="hero-metric-glow font-mono-data text-secondary tracking-tighter font-black select-none text-[5.2rem] sm:text-[7.5rem] md:text-[10rem] lg:text-[11.5rem] leading-none py-2 transition-colors duration-300 group-hover/hero:text-primary-fixed" id="hero-temperature-val" style="font-family: Orbitron, &quot;Share Tech Mono&quot;, monospace; letter-spacing: 0.04em; text-shadow: rgba(167, 211, 144, 0.65) 0px 0px 30px, rgba(90, 129, 71, 0.4) 0px 0px 60px;">11.4°C</div>
+<!-- Micro Hover HUD Metadata Badge -->
+<div class="absolute -bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover/hero:opacity-100 transition-all duration-300 pointer-events-none bg-surface-container-highest px-2 py-0.5 text-[10px] font-mono-telemetry text-primary border border-primary/40 whitespace-nowrap shadow-md">
+      ΔT_SURFACE_MAX // CONFIDENCE 98.4%
+    </div>
+</div>
+<!-- Main Caption -->
+<p class="font-body-lg text-body-lg text-text-primary max-w-xl mx-auto mt-5 mb-2.5 tracking-normal">
+    difference between the hottest and coolest block in Kochi.
+  </p>
+<!-- Sub-telemetry Metadata Line with Live Ping status -->
+<div class="flex items-center justify-center gap-2 font-mono-telemetry text-mono-telemetry text-text-dim tracking-wider uppercase mb-9">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="">model v1 · 400 grid cells · live inference: off (precomputed)</span>
+</div>
+<!-- CTAs Section with Rich Hover and Interactive States -->
+<div class="flex flex-col sm:flex-row items-center gap-4">
+<!-- Primary CTA: Glowing Pulse Border + Sliding Arrow -->
+<a class="btn-thermal-glow group inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-secondary-container text-text-primary font-mono-data text-mono-data rounded-none border border-secondary hover:border-primary transition-all duration-200 hover:bg-secondary-container/90 active:scale-[0.98]" href="#">
+<span class="tracking-wide">Explore the Map</span>
+<span class="transition-transform duration-200 group-hover:translate-x-1.5 text-primary">→</span>
+</a>
+<!-- Secondary CTA: Terminal Raw Spec Link with Icon Micro-Interaction -->
+<a class="group inline-flex items-center gap-2.5 px-6 py-3.5 bg-surface-panel hover:bg-surface-container-high border border-border-subtle hover:border-primary/50 font-mono-telemetry text-mono-telemetry text-text-primary transition-all duration-200 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px] text-text-dim group-hover:text-primary transition-transform duration-200 group-hover:rotate-12" data-icon="terminal">terminal</span>
+<span class="group-hover:text-on-surface transition-colors duration-150">VIEW RAW TELEMETRY JSON</span>
+<span class="text-[10px] text-text-dim group-hover:text-primary transition-colors">↗</span>
+</a>
+</div>
+<!-- Micro Diagnostic Ticker Bar with Interactive Cards & Hotspot Alert Glow -->
+<div class="w-full max-w-3xl mt-12 pt-6 border-t border-border-subtle grid grid-cols-2 md:grid-cols-4 gap-3.5 text-left">
+<!-- Metric 1: Cool Sink -->
+<div class="group relative bg-surface-panel p-3.5 border border-border-subtle hover:border-primary/60 hover:bg-surface-container-high/80 hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+<div class="flex items-center justify-between font-mono-telemetry text-mono-telemetry text-text-dim">
+<span class="">COOL SINK LOC</span>
+<span class="text-[10px] opacity-0 group-hover:opacity-100 text-primary transition-opacity font-mono-telemetry">LIVE</span>
+</div>
+<div class="font-mono-data text-mono-data text-text-primary mt-1 group-hover:text-primary-fixed transition-colors">Mangalavanam</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-0.5 flex items-center justify-between">
+<span class="">28.2°C (Canopy cover)</span>
+</div>
+<!-- Tooltip Telemetry State -->
+<div class="mt-2 pt-2 border-t border-border-subtle/50 text-[10px] font-mono-telemetry text-text-dim/80 hidden group-hover:block transition-all">
+        SINK_INDEX: 0.84 // HIGH_VEG
+      </div>
+</div>
+<!-- Metric 2: Critical Peak (Hotspot Pulsing Alert Card) -->
+<div class="group relative bg-surface-panel p-3.5 border border-accent-heat/60 hotspot-card-glow hover:bg-surface-container-high/90 hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-accent-heat"></div>
+<div class="flex items-center justify-between font-mono-telemetry text-mono-telemetry text-accent-heat font-semibold">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-heat animate-ping"></span>
+          CRITICAL PEAK
+        </span>
+<span class="text-[9px] uppercase px-1 bg-accent-heat/20 text-accent-heat border border-accent-heat/40">WARN</span>
+</div>
+<div class="font-mono-data text-mono-data text-secondary mt-1 group-hover:text-accent-heat transition-colors">Willingdon Port</div>
+<div class="font-mono-telemetry text-mono-telemetry text-accent-heat mt-0.5">39.6°C (Bitumen/Metal)</div>
+<!-- Tooltip Telemetry State -->
+<div class="mt-2 pt-2 border-t border-accent-heat/30 text-[10px] font-mono-telemetry text-accent-heat/90 hidden group-hover:block transition-all">
+        PEAK_DELTA: +11.4°C // EXTREME
+      </div>
+</div>
+<!-- Metric 3: Surface Albedo -->
+<div class="group relative bg-surface-panel p-3.5 border border-border-subtle hover:border-primary/60 hover:bg-surface-container-high/80 hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+<div class="flex items-center justify-between font-mono-telemetry text-mono-telemetry text-text-dim">
+<span class="">SURFACE ALBEDO</span>
+<span class="text-[10px] opacity-0 group-hover:opacity-100 text-primary transition-opacity font-mono-telemetry">SPEC</span>
+</div>
+<div class="font-mono-data text-mono-data text-text-primary mt-1 group-hover:text-primary-fixed transition-colors">0.11 MEAN</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-0.5">Sub-optimal absorption</div>
+<!-- Tooltip Telemetry State -->
+<div class="mt-2 pt-2 border-t border-border-subtle/50 text-[10px] font-mono-telemetry text-text-dim/80 hidden group-hover:block transition-all">
+        SURFACE_REFLECT: LOW (0.08–0.14)
+      </div>
+</div>
+<!-- Metric 4: Population at Risk -->
+<div class="group relative bg-surface-panel p-3.5 border border-border-subtle hover:border-primary/60 hover:bg-surface-container-high/80 hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+<div class="flex items-center justify-between font-mono-telemetry text-mono-telemetry text-text-dim">
+<span class="">POPULATION AT RISK</span>
+<span class="text-[10px] opacity-0 group-hover:opacity-100 text-primary transition-opacity font-mono-telemetry">CENSUS</span>
+</div>
+<div class="font-mono-data text-mono-data text-text-primary mt-1 group-hover:text-primary-fixed transition-colors">184,200 RES</div>
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim mt-0.5">Zone 1 &amp; 2 Vulnerable</div>
+<!-- Tooltip Telemetry State -->
+<div class="mt-2 pt-2 border-t border-border-subtle/50 text-[10px] font-mono-telemetry text-text-dim/80 hidden group-hover:block transition-all">
+        ACUTE_EXPOSURE: 42% ELDERLY
+      </div>
+</div>
+</div>
+</main>
+<!-- Shared Footer Anchor -->
+<footer class="w-full px-margin-lg py-gutter-lg flex flex-col md:flex-row justify-between items-center z-10 border-t border-border-subtle bg-surface-base">
+<div class="font-mono-telemetry text-mono-telemetry text-text-dim text-center md:text-left tracking-wider">
+    SHADENET INSTRUMENTATION PLATFORM // PLANETARY THERMAL OBSERVATIONAL SYSTEM
+  </div>
+<div class="flex flex-wrap gap-4 justify-center md:justify-end mt-4 md:mt-0 items-center">
+<a class="font-mono-telemetry text-mono-telemetry text-text-primary hover:text-primary transition-colors duration-150" href="#">Kochi Terminal</a>
+<span class="font-mono-telemetry text-mono-telemetry text-border-subtle">/</span>
+<a class="font-mono-telemetry text-mono-telemetry text-text-dim hover:text-primary transition-colors duration-150" href="#">Delhi Terminal</a>
+<span class="font-mono-telemetry text-mono-telemetry text-border-subtle">/</span>
+<a class="font-mono-telemetry text-mono-telemetry text-text-dim hover:text-primary transition-colors duration-150" href="#">Bangalore Terminal</a>
+<span class="font-mono-telemetry text-mono-telemetry text-border-subtle">/</span>
+<a class="font-mono-telemetry text-mono-telemetry text-text-dim hover:text-primary transition-colors duration-150" href="#">Mumbai Terminal</a>
+<span class="font-mono-telemetry text-mono-telemetry text-border-subtle">/</span>
+<a class="font-mono-telemetry text-mono-telemetry text-text-dim hover:text-primary transition-colors duration-150" href="#">Chennai Terminal</a>
+<span class="font-mono-telemetry text-mono-telemetry text-border-subtle">/</span>
+<a class="font-mono-telemetry text-mono-telemetry text-text-dim hover:text-primary transition-colors duration-150" href="#">API Spec</a>
+<span class="font-mono-telemetry text-mono-telemetry text-border-subtle">/</span>
+<a class="font-mono-telemetry text-mono-telemetry text-text-dim hover:text-primary transition-colors duration-150" href="#">Sensor Network</a>
+</div>
+</footer>
+<!-- Lightweight Vanilla JS Count-up & Decelerating Telemetry Readout -->
+<script>
+  (function() {
+    // Respect prefers-reduced-motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroEl = document.getElementById('hero-temperature-val');
+    if (!heroEl || prefersReducedMotion) return;
+
+    const targetVal = 11.4;
+    const duration = 1400; // ms
+    const startTime = performance.now();
+
+    function easeOutExpo(x) {
+      return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+    }
+
+    function animateTelemetry(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutExpo(progress);
+
+      const currentVal = (easedProgress * targetVal).toFixed(1);
+      heroEl.textContent = currentVal + '°C';
+
+      if (progress < 1) {
+        requestAnimationFrame(animateTelemetry);
+      } else {
+        heroEl.textContent = '11.4°C';
+      }
+    }
+
+    requestAnimationFrame(animateTelemetry);
+  })();
+</script>
+
+
+</body></html>
